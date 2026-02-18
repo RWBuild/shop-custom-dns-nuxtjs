@@ -1,0 +1,23 @@
+{
+  "hero": {
+    "title": "Contact Us",
+    "subtitle": "Contact Us Any Time."
+  },
+  "info": [
+    {
+      "id": "location",
+      "title": "Find us",
+      "lines": ["KG 7 Ave, Kigali", "Rwanda"]
+    },
+    {
+      "id": "email",
+      "title": "Send us a message",
+      "lines": ["hello@store.com"]
+    },
+    {
+      "id": "phone",
+      "title": "Call us",
+      "lines": ["+250 788 000 000"]
+    }
+  ]
+}

@@ -1,0 +1,33 @@
+{
+  "hero": {
+    "subtitle": "Curating quality products since 2020"
+  },
+  "sections": [
+    {
+      "id": "story",
+      "title": "Our Story",
+      "content": "What started as a small passion project has grown into a trusted destination for quality products. We believe that everyone deserves access to carefully selected items that combine functionality, style, and value. Our journey began with a simple idea: make shopping easier and more enjoyable by offering only the products we would use ourselves."
+    },
+    {
+      "id": "mission",
+      "title": "Our Mission",
+      "content": "We're on a mission to simplify your shopping experience. By carefully curating our collection, we save you time and ensure every product meets our high standards. We work directly with trusted suppliers to bring you quality items at fair prices, without the overwhelming choices that make online shopping frustrating."
+    },
+    {
+      "id": "values",
+      "title": "What We Stand For",
+      "content": "Quality over quantity. We'd rather offer fewer products that we truly believe in than fill our store with mediocre options. Every item in our collection has been evaluated for durability, design, and value. If it doesn't meet our standards, it doesn't make the cut."
+    },
+    {
+      "id": "commitment",
+      "title": "Our Commitment",
+      "content": "Your satisfaction is our priority. We stand behind every product we sell and are here to help if anything doesn't meet your expectations. Our customer service team is always ready to assist with questions, recommendations, or concerns. We're not just selling products—we're building relationships."
+    }
+  ],
+  "stats": [
+    { "value": "5,000+", "label": "Happy Customers" },
+    { "value": "500+", "label": "Products" },
+    { "value": "4.9", "label": "Average Rating" },
+    { "value": "24/7", "label": "Support" }
+  ]
+}

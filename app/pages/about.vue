@@ -1,15 +1,32 @@
 <script setup lang="ts">
+import { mockAbout } from '~/mocks';
+
 useSeo({
   title: 'About Us',
-  description: 'Learn more about our company, mission, and values.'
-})
+  description: mockAbout.hero.subtitle,
+});
 </script>
 
 <template>
-  <UContainer class="py-12">
-    <h1 class="text-4xl font-bold text-gray-900">About Us</h1>
-    <p class="mt-4 text-lg text-gray-600">
-      Learn more about our company. This is the about page.
-    </p>
-  </UContainer>
+  <div>
+    <UContainer class="py-10 sm:py-16">
+      <div class="mx-auto max-w-2xl">
+        <h1 class="text-2xl font-bold text-gray-900 sm:text-3xl">About Our Store</h1>
+        <p class="mt-2 text-gray-500">
+          {{ mockAbout.hero.subtitle }}
+        </p>
+
+        <div class="mt-10 space-y-10">
+          <section v-for="section in mockAbout.sections" :key="section.id">
+            <h2 class="text-lg font-semibold text-gray-900">
+              {{ section.title }}
+            </h2>
+            <p class="mt-3 text-sm leading-relaxed text-gray-600">
+              {{ section.content }}
+            </p>
+          </section>
+        </div>
+      </div>
+    </UContainer>
+  </div>
 </template>

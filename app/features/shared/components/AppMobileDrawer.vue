@@ -17,7 +17,6 @@ const emit = defineEmits<{
 }>();
 
 const route = useRoute();
-const { cartCount } = useCart();
 const searchQuery = ref('');
 
 const isOpen = computed({
@@ -41,10 +40,6 @@ function handleSearch() {
 }
 
 function handleNavClick() {
-  closeDrawer();
-}
-
-function handleCartClick() {
   closeDrawer();
 }
 </script>
@@ -108,23 +103,6 @@ function handleCartClick() {
             {{ item.label }}
           </NuxtLink>
         </nav>
-
-        <div class="p-4 border-t border-gray-100">
-          <button
-            type="button"
-            class="flex items-center justify-center gap-2 w-full h-10 bg-primary hover:bg-primary-600 text-white text-xs font-medium rounded-lg transition-colors"
-            @click="handleCartClick"
-          >
-            <UIcon name="i-lucide-shopping-cart" class="w-4 h-4" />
-            <span>View Cart</span>
-            <span
-              v-if="cartCount > 0"
-              class="px-1.5 py-0.5 text-[10px] font-semibold bg-white/20 rounded"
-            >
-              {{ cartCount > 99 ? '99+' : cartCount }}
-            </span>
-          </button>
-        </div>
       </div>
     </template>
   </USlideover>

@@ -1,6 +1,8 @@
 <script setup lang="ts">
 const route = useRoute();
 const { cartCount } = useCart();
+const { openDrawer: openCartDrawer } = useCartDrawer();
+const { isAnimating: isCartAnimating } = useCartNotification();
 
 const navigation = [
   { label: 'Home', to: '/' },
@@ -45,7 +47,6 @@ function closeSearch() {
 function handleSearch(query?: string) {
   const searchTerm = query || searchQuery.value;
   if (searchTerm.trim()) {
-    // TODO: Implement search navigation
   }
 }
 </script>
@@ -132,13 +133,15 @@ function handleSearch(query?: string) {
             type="button"
             class="flex items-center gap-1.5 pl-2.5 pr-1.5 py-1.5 bg-gray-100 hover:bg-gray-200 rounded-full transition-colors cursor-pointer"
             aria-label="Cart"
+            @click="openCartDrawer"
           >
             <UIcon
               name="i-lucide-shopping-cart"
               class="w-4 h-4 text-gray-700"
             />
             <span
-              class="flex items-center justify-center min-w-5 h-5 px-1.5 text-[10px] font-semibold text-white bg-primary rounded-full"
+              class="flex items-center justify-center min-w-5 h-5 px-1.5 text-[10px] font-semibold text-white bg-primary rounded-full transition-transform"
+              :class="isCartAnimating ? 'cart-badge-bounce' : ''"
             >
               {{ cartCount > 99 ? '99+' : cartCount }}
             </span>
@@ -168,6 +171,28 @@ function handleSearch(query?: string) {
 
   .lg\:size-md {
     --button-size: 2.25rem;
+  }
+}
+
+.cart-badge-bounce {
+  animation: cartBounce 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+@keyframes cartBounce {
+  0% {
+    transform: scale(1);
+  }
+  30% {
+    transform: scale(1.3);
+  }
+  50% {
+    transform: scale(0.9);
+  }
+  70% {
+    transform: scale(1.1);
+  }
+  100% {
+    transform: scale(1);
   }
 }
 </style>
