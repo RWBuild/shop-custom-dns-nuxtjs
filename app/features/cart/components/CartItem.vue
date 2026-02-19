@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import type { CartItem } from '../types/cart.types';
+import { formatCurrency } from '~/features/shared/utils';
 
 interface Props {
   item: CartItem;
@@ -12,13 +13,6 @@ const emit = defineEmits<{
   decrement: [id: string];
   remove: [id: string];
 }>();
-
-function formatPrice(price: number): string {
-  return new Intl.NumberFormat('en-US', {
-    minimumFractionDigits: 0,
-    maximumFractionDigits: 0,
-  }).format(price);
-}
 </script>
 
 <template>
@@ -74,7 +68,7 @@ function formatPrice(price: number): string {
         </div>
 
         <p class="text-xs font-semibold text-gray-900">
-          {{ formatPrice(item.price * item.quantity) }} RWF
+          {{ formatCurrency(item.price * item.quantity) }}
         </p>
       </div>
     </div>

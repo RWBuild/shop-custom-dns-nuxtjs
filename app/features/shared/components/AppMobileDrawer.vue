@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import { useRouteActive } from '~/features/shared/composables/useRouteActive';
+
 interface NavigationItem {
   label: string;
   to: string;
@@ -16,17 +18,13 @@ const emit = defineEmits<{
   search: [query: string];
 }>();
 
-const route = useRoute();
+const { isActive } = useRouteActive();
 const searchQuery = ref('');
 
 const isOpen = computed({
   get: () => props.open,
   set: (value) => emit('update:open', value),
 });
-
-function isActive(path: string) {
-  return route.path === path;
-}
 
 function closeDrawer() {
   isOpen.value = false;

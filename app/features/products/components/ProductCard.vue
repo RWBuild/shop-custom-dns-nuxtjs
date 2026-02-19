@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import type { Product } from '~/features/products/types/product';
+import { formatCurrency, type CurrencyCode } from '~/features/shared/utils';
 
 interface Props {
   product: Product;
@@ -13,14 +14,6 @@ const emit = defineEmits<{
 
 function handleAddToCart(product: Product) {
   emit('addToCart', product);
-}
-
-function formatPrice(price: number, currency: string): string {
-  const formatted = new Intl.NumberFormat('en-US', {
-    minimumFractionDigits: 0,
-    maximumFractionDigits: 0,
-  }).format(price);
-  return `${formatted} ${currency}`;
 }
 
 const placeholderImage = 'https://placehold.co/400x400/f3f6f8/7493b2?text=No+Image';
@@ -62,7 +55,7 @@ const placeholderImage = 'https://placehold.co/400x400/f3f6f8/7493b2?text=No+Ima
       </NuxtLink>
 
       <p class="text-xs font-semibold text-primary sm:text-sm">
-        {{ formatPrice(product.price, product.currency) }}
+        {{ formatCurrency(product.price, product.currency as CurrencyCode) }}
       </p>
 
       <button

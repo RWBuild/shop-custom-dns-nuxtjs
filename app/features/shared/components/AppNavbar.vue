@@ -1,8 +1,12 @@
 <script setup lang="ts">
-const route = useRoute();
+import { useRouteActive } from '~/features/shared/composables/useRouteActive';
+import { useScrollDetection } from '~/features/shared/composables/useScrollDetection';
+
 const { cartCount } = useCart();
 const { openDrawer: openCartDrawer } = useCartDrawer();
 const { isAnimating: isCartAnimating } = useCartNotification();
+const { isActive } = useRouteActive();
+const { isScrolled } = useScrollDetection();
 
 const navigation = [
   { label: 'Home', to: '/' },
@@ -12,25 +16,7 @@ const navigation = [
 
 const isSearchOpen = ref(false);
 const searchQuery = ref('');
-const isScrolled = ref(false);
 const isMobileMenuOpen = ref(false);
-
-function handleScroll() {
-  isScrolled.value = window.scrollY > 0;
-}
-
-onMounted(() => {
-  window.addEventListener('scroll', handleScroll);
-  handleScroll();
-});
-
-onUnmounted(() => {
-  window.removeEventListener('scroll', handleScroll);
-});
-
-function isActive(path: string) {
-  return route.path === path;
-}
 
 function toggleSearch() {
   isSearchOpen.value = !isSearchOpen.value;
@@ -46,8 +32,7 @@ function closeSearch() {
 
 function handleSearch(query?: string) {
   const searchTerm = query || searchQuery.value;
-  if (searchTerm.trim()) {
-  }
+  if (!searchTerm.trim()) return;
 }
 </script>
 

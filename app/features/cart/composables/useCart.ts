@@ -1,14 +1,11 @@
 import type { CartItem, CartSummary } from '../types/cart.types';
+import { generateId } from '~/features/shared/utils';
 
 const CART_STORAGE_KEY = 'guh-store-cart';
 
 const cartItems = ref<CartItem[]>([]);
 const isLoading = ref(false);
 const isInitialized = ref(false);
-
-function generateCartItemId(): string {
-  return `${Date.now()}-${Math.random().toString(36).substring(2, 9)}`;
-}
 
 function persistCart(): void {
   if (import.meta.client) {
@@ -71,7 +68,7 @@ export function useCart() {
     } else {
       cartItems.value.push({
         ...item,
-        id: generateCartItemId(),
+        id: generateId(),
       });
     }
 

@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import { formatCurrency } from '~/features/shared/utils';
+
 const { isOpen, currentView, closeDrawer, goToCheckout, goToCart } = useCartDrawer();
 const { items, isEmpty, cartSummary, incrementQuantity, decrementQuantity, removeItem, clearCart } =
   useCart();
@@ -12,13 +14,6 @@ const checkoutForm = ref({
 });
 
 const isSubmitting = ref(false);
-
-function formatPrice(price: number): string {
-  return new Intl.NumberFormat('en-US', {
-    minimumFractionDigits: 0,
-    maximumFractionDigits: 0,
-  }).format(price);
-}
 
 function handleCheckout() {
   if (isEmpty.value) return;
@@ -150,7 +145,7 @@ watch(isOpen, (open) => {
                   <div class="flex items-center justify-between text-sm">
                     <span class="text-gray-500">Subtotal</span>
                     <span class="font-medium text-gray-900">
-                      {{ formatPrice(cartSummary.subtotal) }} RWF
+                      {{ formatCurrency(cartSummary.subtotal) }}
                     </span>
                   </div>
 
@@ -159,7 +154,7 @@ watch(isOpen, (open) => {
                   >
                     <span class="font-medium text-gray-900">Total</span>
                     <span class="font-semibold text-gray-900">
-                      {{ formatPrice(cartSummary.total) }} RWF
+                      {{ formatCurrency(cartSummary.total) }}
                     </span>
                   </div>
                 </div>
@@ -257,13 +252,13 @@ watch(isOpen, (open) => {
                   >
                     <span class="text-gray-600">{{ item.name }} × {{ item.quantity }}</span>
                     <span class="font-medium text-gray-900">
-                      {{ formatPrice(item.price * item.quantity) }} RWF
+                      {{ formatCurrency(item.price * item.quantity) }}
                     </span>
                   </div>
                   <div class="flex items-center justify-between border-t border-gray-200 pt-2">
                     <span class="font-medium text-gray-900">Total</span>
                     <span class="font-semibold text-gray-900">
-                      {{ formatPrice(cartSummary.total) }} RWF
+                      {{ formatCurrency(cartSummary.total) }}
                     </span>
                   </div>
                 </div>

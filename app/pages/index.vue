@@ -2,6 +2,7 @@
 import type { CategoryWithProducts } from '~/features/home/components/CategoryProductTabs.vue';
 import type { Product } from '~/features/products/types/product';
 import { getMockCategories, getMockProducts, getMockProductsByCategory } from '~/mocks';
+import { slugify } from '~/features/shared/utils';
 
 useSeo({
   title: 'Home',
@@ -22,7 +23,7 @@ onMounted(async () => {
   allProducts.value = getMockProducts();
   categories.value = mockCategories.map((cat) => ({
     ...cat,
-    slug: cat.name.toLowerCase().replace(/\s+/g, '-'),
+    slug: slugify(cat.name),
     products: getMockProductsByCategory(cat.id),
   }));
 

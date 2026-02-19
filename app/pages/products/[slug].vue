@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import type { Product } from '~/features/products/types/product';
 import { getMockCategories, getMockProducts } from '~/mocks';
+import { formatCurrency, slugify, type CurrencyCode } from '~/features/shared/utils';
 
 const route = useRoute();
 const slug = route.params.slug as string;
@@ -13,7 +14,7 @@ const category = ref<{ id: number; name: string } | null>(null);
 
 const categorySlug = computed(() => {
   if (!category.value) return '';
-  return category.value.name.toLowerCase().replace(/\s+/g, '-');
+  return slugify(category.value.name);
 });
 
 const productImages = computed(() => {
@@ -28,14 +29,6 @@ const productImages = computed(() => {
 });
 
 const quantity = ref(1);
-
-function formatPrice(price: number, currency: string): string {
-  const formatted = new Intl.NumberFormat('en-US', {
-    minimumFractionDigits: 0,
-    maximumFractionDigits: 0,
-  }).format(price);
-  return `${formatted} ${currency}`;
-}
 
 function handleAddToCart() {
   if (!product.value) return;
@@ -77,7 +70,7 @@ useSeo({
     </UContainer>
 
     <UContainer v-else-if="product" class="py-6 sm:py-10">
-      <nav class="mb-6 text-sm">
+      <nav class="mb-6 text-xs" aria-label="Breadcrumb">
         <ol class="flex flex-wrap items-center gap-1.5 text-gray-500 sm:gap-2">
           <li class="flex items-center gap-1.5 sm:gap-2">
             <NuxtLink to="/" class="hover:text-primary">Home</NuxtLink>
@@ -110,11 +103,13 @@ useSeo({
           </h1>
 
           <p class="mt-4 text-2xl font-bold text-primary sm:text-3xl">
-            {{ formatPrice(product.price, product.currency) }}
+            {{ formatCurrency(product.price, product.currency as CurrencyCode) }}
           </p>
 
           <div v-if="product.is_sold" class="mt-4">
-            <span class="inline-flex rounded-full bg-red-100 px-3 py-1 text-sm font-medium text-red-600">
+            <span
+              class="inline-flex rounded-full bg-red-100 px-3 py-1 text-sm font-medium text-red-600"
+            >
               Sold Out
             </span>
           </div>
