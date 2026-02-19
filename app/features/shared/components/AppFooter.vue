@@ -10,7 +10,6 @@ const quickLinks = [
 const information = [
   { label: 'Privacy Policy', to: '/privacy' },
   { label: 'Terms & Conditions', to: '/terms' },
-  { label: 'FAQs', to: '/faqs' },
 ];
 </script>
 
@@ -18,9 +17,7 @@ const information = [
   <footer>
     <div class="bg-gray-900 text-gray-300">
       <UContainer>
-        <div
-          class="grid grid-cols-2 sm:grid-cols-3 gap-6 sm:gap-8 py-8 sm:py-10 lg:py-12"
-        >
+        <div class="grid grid-cols-2 sm:grid-cols-3 gap-6 sm:gap-8 py-8 sm:py-10 lg:py-12">
           <div>
             <h3
               class="text-[11px] sm:text-xs font-semibold text-white mb-3 sm:mb-4 uppercase tracking-wider"
@@ -57,7 +54,9 @@ const information = [
             </ul>
           </div>
 
-          <div class="col-span-2 sm:col-span-1 flex justify-center sm:justify-end items-start pt-4 sm:pt-0 border-t border-gray-800 sm:border-0">
+          <div
+            class="col-span-2 sm:col-span-1 flex justify-center sm:justify-end items-start pt-4 sm:pt-0 border-t border-gray-800 sm:border-0"
+          >
             <NuxtImg
               src="/images/powered-by-guhemba.svg"
               alt="Powered by Guhemba"
@@ -72,16 +71,16 @@ const information = [
 
     <div class="bg-gray-950 text-gray-400">
       <UContainer>
-        <div
-          class="flex justify-center items-center py-3 sm:py-3.5 text-[10px] sm:text-[11px]"
-        >
+        <div class="flex justify-center items-center py-3 sm:py-3.5 text-[10px] sm:text-[11px]">
           <p class="text-center">
             &copy; {{ currentYear }} All rights reserved. Developed by
             <a
               href="https://rwandabuildprogram.com/"
               target="_blank"
               class="text-gray-300 font-medium hover:text-primary transition-colors"
-            >RwandaBuildProgram</a>
+            >
+              RwandaBuildProgram
+            </a>
           </p>
         </div>
       </UContainer>

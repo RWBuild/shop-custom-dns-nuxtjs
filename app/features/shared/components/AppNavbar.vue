@@ -1,6 +1,29 @@
 <script setup lang="ts">
-const route = useRoute();
+import { useRouteActive } from '~/features/shared/composables/useRouteActive';
+import { useScrollDetection } from '~/features/shared/composables/useScrollDetection';
+import { useProductSearch } from '~/features/products/composables/useProductSearch';
+
 const { cartCount } = useCart();
+const { openDrawer: openCartDrawer } = useCartDrawer();
+const { isAnimating: isCartAnimating } = useCartNotification();
+const { isActive } = useRouteActive();
+const { isScrolled } = useScrollDetection();
+
+const {
+  searchQuery,
+  suggestions,
+  recentSearches,
+  isLoading,
+  isOpen: isSearchOpen,
+  handleInput,
+  openSearch,
+  closeSearch,
+  selectSuggestion,
+  submitSearch,
+  selectRecentSearch,
+  clearRecentSearches,
+  removeRecentSearch,
+} = useProductSearch();
 
 const navigation = [
   { label: 'Home', to: '/' },
@@ -8,46 +31,43 @@ const navigation = [
   { label: 'Contact Us', to: '/contact' },
 ];
 
-const isSearchOpen = ref(false);
-const searchQuery = ref('');
-const isScrolled = ref(false);
 const isMobileMenuOpen = ref(false);
+const searchInputRef = ref<HTMLInputElement | null>(null);
 
-function handleScroll() {
-  isScrolled.value = window.scrollY > 0;
+function toggleSearch() {
+  if (isSearchOpen.value) {
+    closeSearch();
+  } else {
+    openSearch();
+    nextTick(() => {
+      searchInputRef.value?.focus();
+    });
+  }
+}
+
+function handleSearchInput(event: Event) {
+  const target = event.target as HTMLInputElement;
+  handleInput(target.value);
+}
+
+function handleSearchSubmit() {
+  submitSearch();
+}
+
+function handleClickOutside(event: MouseEvent) {
+  const target = event.target as HTMLElement;
+  if (!target.closest('.search-container')) {
+    closeSearch();
+  }
 }
 
 onMounted(() => {
-  window.addEventListener('scroll', handleScroll);
-  handleScroll();
+  document.addEventListener('click', handleClickOutside);
 });
 
 onUnmounted(() => {
-  window.removeEventListener('scroll', handleScroll);
+  document.removeEventListener('click', handleClickOutside);
 });
-
-function isActive(path: string) {
-  return route.path === path;
-}
-
-function toggleSearch() {
-  isSearchOpen.value = !isSearchOpen.value;
-  if (!isSearchOpen.value) {
-    searchQuery.value = '';
-  }
-}
-
-function closeSearch() {
-  isSearchOpen.value = false;
-  searchQuery.value = '';
-}
-
-function handleSearch(query?: string) {
-  const searchTerm = query || searchQuery.value;
-  if (searchTerm.trim()) {
-    // TODO: Implement search navigation
-  }
-}
 </script>
 
 <template>
@@ -92,29 +112,51 @@ function handleSearch(query?: string) {
         </div>
 
         <div class="flex items-center gap-0.5 sm:gap-1 lg:gap-2">
-          <div class="relative hidden sm:flex items-center">
-            <div
-              class="flex items-center overflow-hidden transition-all duration-300 ease-out"
-              :class="isSearchOpen ? 'w-48 md:w-56 lg:w-64' : 'w-0'"
-            >
-              <AppInput
-                v-model="searchQuery"
-                type="text"
-                placeholder="Search..."
-                icon="i-lucide-search"
-                :autofocus="isSearchOpen"
-                @keyup.enter="handleSearch()"
-                @keyup.escape="closeSearch"
+          <div class="relative hidden sm:block search-container">
+            <div class="flex items-center">
+              <div
+                class="relative overflow-hidden transition-all duration-300 ease-out"
+                :class="isSearchOpen ? 'w-64 md:w-72 lg:w-80' : 'w-0'"
+              >
+                <input
+                  ref="searchInputRef"
+                  :value="searchQuery"
+                  type="text"
+                  placeholder="Search products..."
+                  class="w-full h-9 pl-9 pr-3 text-sm bg-gray-50 border border-gray-200 rounded-full focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary focus:bg-white transition-colors"
+                  @input="handleSearchInput"
+                  @keyup.enter="handleSearchSubmit"
+                  @keyup.escape="closeSearch"
+                  @focus="openSearch"
+                />
+                <UIcon
+                  name="i-lucide-search"
+                  class="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-gray-400 pointer-events-none"
+                />
+              </div>
+
+              <UButton
+                :icon="isSearchOpen ? 'i-lucide-x' : 'i-lucide-search'"
+                color="neutral"
+                variant="ghost"
+                size="sm"
+                class="cursor-pointer lg:size-md rounded-full ml-1 shrink-0"
+                aria-label="Search"
+                @click.stop="toggleSearch"
               />
             </div>
-            <UButton
-              :icon="isSearchOpen ? 'i-lucide-x' : 'i-lucide-search'"
-              color="neutral"
-              variant="ghost"
-              size="sm"
-              class="cursor-pointer lg:size-md rounded-full"
-              aria-label="Search"
-              @click="toggleSearch"
+
+            <SearchDropdown
+              v-if="isSearchOpen"
+              :suggestions="suggestions"
+              :recent-searches="recentSearches"
+              :is-loading="isLoading"
+              :query="searchQuery"
+              @select-product="selectSuggestion"
+              @select-recent="selectRecentSearch"
+              @remove-recent="removeRecentSearch"
+              @clear-recent="clearRecentSearches"
+              @submit="submitSearch"
             />
           </div>
 
@@ -132,13 +174,15 @@ function handleSearch(query?: string) {
             type="button"
             class="flex items-center gap-1.5 pl-2.5 pr-1.5 py-1.5 bg-gray-100 hover:bg-gray-200 rounded-full transition-colors cursor-pointer"
             aria-label="Cart"
+            @click="openCartDrawer"
           >
             <UIcon
               name="i-lucide-shopping-cart"
               class="w-4 h-4 text-gray-700"
             />
             <span
-              class="flex items-center justify-center min-w-5 h-5 px-1.5 text-[10px] font-semibold text-white bg-primary rounded-full"
+              class="flex items-center justify-center min-w-5 h-5 px-1.5 text-[10px] font-semibold text-white bg-primary rounded-full transition-transform"
+              :class="isCartAnimating ? 'cart-badge-bounce' : ''"
             >
               {{ cartCount > 99 ? '99+' : cartCount }}
             </span>
@@ -150,7 +194,7 @@ function handleSearch(query?: string) {
     <AppMobileDrawer
       v-model:open="isMobileMenuOpen"
       :navigation="navigation"
-      @search="handleSearch"
+      @search="submitSearch"
     />
   </header>
 </template>
@@ -168,6 +212,28 @@ function handleSearch(query?: string) {
 
   .lg\:size-md {
     --button-size: 2.25rem;
+  }
+}
+
+.cart-badge-bounce {
+  animation: cartBounce 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+@keyframes cartBounce {
+  0% {
+    transform: scale(1);
+  }
+  30% {
+    transform: scale(1.3);
+  }
+  50% {
+    transform: scale(0.9);
+  }
+  70% {
+    transform: scale(1.1);
+  }
+  100% {
+    transform: scale(1);
   }
 }
 </style>

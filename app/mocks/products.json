@@ -1,0 +1,279 @@
+{
+  "data": [
+    {
+      "id": 1,
+      "slug": "wireless-bluetooth-headphones-1-1-abc123",
+      "name": "Wireless Bluetooth Headphones",
+      "price": 45000,
+      "currency": "RWF",
+      "description": "<p>Premium wireless headphones with active noise cancellation and 30-hour battery life.</p><ul><li>Active Noise Cancellation</li><li>30-hour battery life</li><li>Bluetooth 5.0</li><li>Comfortable over-ear design</li></ul>",
+      "short_description": "Premium sound with noise cancellation",
+      "image": "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=600&q=80",
+      "images": [
+        "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=600&q=80",
+        "https://images.unsplash.com/photo-1583394838336-acd977736f90?w=600&q=80",
+        "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4",
+        "https://images.unsplash.com/photo-1484704849700-f032a568e944?w=600&q=80",
+        "https://images.unsplash.com/photo-1546435770-a3e426bf472b?w=600&q=80"
+      ],
+      "is_linked_to_stock": true,
+      "purchase_option": "purchase_only",
+      "is_sold": false,
+      "category_id": 1
+    },
+    {
+      "id": 2,
+      "slug": "smart-watch-pro-1-1-def456",
+      "name": "Smart Watch Pro",
+      "price": 120000,
+      "currency": "RWF",
+      "description": "<p>Advanced smartwatch with health monitoring, GPS, and 7-day battery life.</p>",
+      "short_description": "Health tracking & GPS enabled",
+      "image": "https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=600&q=80",
+      "is_linked_to_stock": true,
+      "purchase_option": "purchase_only",
+      "is_sold": false,
+      "category_id": 1
+    },
+    {
+      "id": 3,
+      "slug": "portable-speaker-1-1-ghi789",
+      "name": "Portable Bluetooth Speaker",
+      "price": 35000,
+      "currency": "RWF",
+      "description": "<p>Waterproof portable speaker with 360° sound and 12-hour playtime.</p>",
+      "short_description": "Waterproof with powerful bass",
+      "image": "https://images.unsplash.com/photo-1608043152269-423dbba4e7e1?w=600&q=80",
+      "is_linked_to_stock": true,
+      "purchase_option": "purchase_only",
+      "is_sold": false,
+      "category_id": 1
+    },
+    {
+      "id": 4,
+      "slug": "cotton-crew-neck-tshirt-2-2-jkl012",
+      "name": "Cotton Crew Neck T-Shirt",
+      "price": 15000,
+      "currency": "RWF",
+      "description": "<p>Soft 100% cotton t-shirt with a classic fit.</p>",
+      "short_description": "Classic fit, 100% cotton",
+      "image": "https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?w=600&q=80",
+      "is_linked_to_stock": true,
+      "purchase_option": "purchase_only",
+      "is_sold": false,
+      "category_id": 2
+    },
+    {
+      "id": 5,
+      "slug": "denim-jacket-2-2-mno345",
+      "name": "Classic Denim Jacket",
+      "price": 55000,
+      "currency": "RWF",
+      "description": "<p>Timeless denim jacket with a modern fit.</p>",
+      "short_description": "Timeless style, modern fit",
+      "image": "https://images.unsplash.com/photo-1576995853123-5a10305d93c0?w=600&q=80",
+      "is_linked_to_stock": true,
+      "purchase_option": "purchase_only",
+      "is_sold": false,
+      "category_id": 2
+    },
+    {
+      "id": 6,
+      "slug": "slim-fit-chinos-2-2-pqr678",
+      "name": "Slim Fit Chinos",
+      "price": 32000,
+      "currency": "RWF",
+      "description": "<p>Comfortable slim-fit chinos perfect for casual and semi-formal occasions.</p>",
+      "short_description": "Versatile and comfortable",
+      "image": "https://images.unsplash.com/photo-1473966968600-fa801b869a1a?w=600&q=80",
+      "is_linked_to_stock": true,
+      "purchase_option": "purchase_only",
+      "is_sold": false,
+      "category_id": 2
+    },
+    {
+      "id": 7,
+      "slug": "running-shoes-3-3-stu901",
+      "name": "Performance Running Shoes",
+      "price": 75000,
+      "currency": "RWF",
+      "description": "<p>Lightweight running shoes with responsive cushioning.</p><ul><li>Breathable mesh upper</li><li>Responsive foam midsole</li><li>Durable rubber outsole</li><li>Reflective details for visibility</li></ul>",
+      "short_description": "Lightweight & responsive",
+      "image": "https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=600&q=80",
+      "images": [
+        "https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=600&q=80",
+        "https://images.unsplash.com/photo-1460353581641-37baddab0fa2?w=600&q=80",
+        "https://images.unsplash.com/photo-1491553895911-0055uj8ed?w=600&q=80",
+        "https://images.unsplash.com/photo-1606107557195-0e29a4b5b4aa?w=600&q=80"
+      ],
+      "is_linked_to_stock": true,
+      "purchase_option": "purchase_only",
+      "is_sold": false,
+      "category_id": 3
+    },
+    {
+      "id": 8,
+      "slug": "leather-loafers-3-3-vwx234",
+      "name": "Classic Leather Loafers",
+      "price": 85000,
+      "currency": "RWF",
+      "description": "<p>Handcrafted leather loafers for a sophisticated look.</p>",
+      "short_description": "Handcrafted elegance",
+      "image": "https://images.unsplash.com/photo-1614252369475-531eba835eb1?w=600&q=80",
+      "is_linked_to_stock": true,
+      "purchase_option": "purchase_only",
+      "is_sold": false,
+      "category_id": 3
+    },
+    {
+      "id": 9,
+      "slug": "canvas-sneakers-3-3-yza567",
+      "name": "Canvas Sneakers",
+      "price": 28000,
+      "currency": "RWF",
+      "description": "<p>Classic canvas sneakers for everyday wear.</p>",
+      "short_description": "Everyday casual style",
+      "image": "https://images.unsplash.com/photo-1525966222134-fcfa99b8ae77?w=600&q=80",
+      "is_linked_to_stock": true,
+      "purchase_option": "purchase_only",
+      "is_sold": false,
+      "category_id": 3
+    },
+    {
+      "id": 10,
+      "slug": "leather-wallet-4-4-bcd890",
+      "name": "Genuine Leather Wallet",
+      "price": 25000,
+      "currency": "RWF",
+      "description": "<p>Slim bifold wallet crafted from genuine leather.</p>",
+      "short_description": "Slim & genuine leather",
+      "image": "https://images.unsplash.com/photo-1627123424574-724758594e93?w=600&q=80",
+      "is_linked_to_stock": true,
+      "purchase_option": "purchase_only",
+      "is_sold": false,
+      "category_id": 4
+    },
+    {
+      "id": 11,
+      "slug": "aviator-sunglasses-4-4-efg123",
+      "name": "Aviator Sunglasses",
+      "price": 38000,
+      "currency": "RWF",
+      "description": "<p>Classic aviator sunglasses with UV protection.</p>",
+      "short_description": "Classic style, UV protection",
+      "image": "https://images.unsplash.com/photo-1572635196237-14b3f281503f?w=600&q=80",
+      "is_linked_to_stock": true,
+      "purchase_option": "purchase_only",
+      "is_sold": false,
+      "category_id": 4
+    },
+    {
+      "id": 12,
+      "slug": "canvas-backpack-4-4-hij456",
+      "name": "Canvas Travel Backpack",
+      "price": 48000,
+      "currency": "RWF",
+      "description": "<p>Durable canvas backpack with multiple compartments.</p><ul><li>Water-resistant canvas</li><li>Padded laptop sleeve (15\")</li><li>Multiple organizer pockets</li><li>Adjustable shoulder straps</li></ul>",
+      "short_description": "Durable & spacious",
+      "image": "https://images.unsplash.com/photo-1553062407-98eeb64c6a62?w=600&q=80",
+      "images": [
+        "https://images.unsplash.com/photo-1553062407-98eeb64c6a62?w=600&q=80",
+        "https://images.unsplash.com/photo-1581605405669-fcdf81165afa?w=600&q=80",
+        "https://images.unsplash.com/photo-1622560480605-d83c853bc5c3?w=600&q=80"
+      ],
+      "is_linked_to_stock": true,
+      "purchase_option": "purchase_only",
+      "is_sold": false,
+      "category_id": 4
+    },
+    {
+      "id": 13,
+      "slug": "ceramic-vase-5-5-klm789",
+      "name": "Minimalist Ceramic Vase",
+      "price": 22000,
+      "currency": "RWF",
+      "description": "<p>Handcrafted ceramic vase with a modern minimalist design.</p>",
+      "short_description": "Handcrafted modern design",
+      "image": "https://images.unsplash.com/photo-1612198188060-c7c2a3b66eae?w=600&q=80",
+      "is_linked_to_stock": true,
+      "purchase_option": "purchase_only",
+      "is_sold": false,
+      "category_id": 5
+    },
+    {
+      "id": 14,
+      "slug": "scented-candle-set-5-5-nop012",
+      "name": "Scented Candle Set",
+      "price": 18000,
+      "currency": "RWF",
+      "description": "<p>Set of 3 soy wax candles with calming scents.</p>",
+      "short_description": "Calming soy wax candles",
+      "image": "https://images.unsplash.com/photo-1602028915047-37269d1a73f7?w=600&q=80",
+      "is_linked_to_stock": true,
+      "purchase_option": "purchase_only",
+      "is_sold": false,
+      "category_id": 5
+    },
+    {
+      "id": 15,
+      "slug": "throw-blanket-5-5-qrs345",
+      "name": "Cozy Throw Blanket",
+      "price": 35000,
+      "currency": "RWF",
+      "description": "<p>Soft knitted throw blanket perfect for cozy evenings.</p>",
+      "short_description": "Soft & cozy knitted",
+      "image": "https://images.unsplash.com/photo-1555041469-a586c61ea9bc?w=600&q=80",
+      "is_linked_to_stock": true,
+      "purchase_option": "purchase_only",
+      "is_sold": true,
+      "category_id": 5
+    },
+    {
+      "id": 16,
+      "slug": "desk-lamp-5-5-tuv678",
+      "name": "Modern Desk Lamp",
+      "price": 42000,
+      "currency": "RWF",
+      "description": "<p>Adjustable LED desk lamp with touch controls.</p>",
+      "short_description": "LED with touch controls",
+      "image": "https://images.unsplash.com/photo-1507473885765-e6ed057f782c?w=600&q=80",
+      "is_linked_to_stock": true,
+      "purchase_option": "purchase_only",
+      "is_sold": false,
+      "category_id": 5
+    }
+  ],
+  "links": {
+    "first": "https://api.example.com/products?page=1",
+    "last": "https://api.example.com/products?page=1",
+    "prev": null,
+    "next": null
+  },
+  "meta": {
+    "current_page": 1,
+    "from": 1,
+    "last_page": 1,
+    "links": [
+      {
+        "url": null,
+        "label": "&laquo; Previous",
+        "active": false
+      },
+      {
+        "url": "https://api.example.com/products?page=1",
+        "label": "1",
+        "active": true
+      },
+      {
+        "url": null,
+        "label": "Next &raquo;",
+        "active": false
+      }
+    ],
+    "path": "https://api.example.com/products",
+    "per_page": 15,
+    "to": 16,
+    "total": 16
+  },
+  "additional": []
+}

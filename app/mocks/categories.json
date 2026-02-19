@@ -1,0 +1,57 @@
+{
+  "data": [
+    {
+      "id": 1,
+      "name": "Electronics"
+    },
+    {
+      "id": 2,
+      "name": "Clothing"
+    },
+    {
+      "id": 3,
+      "name": "Shoes"
+    },
+    {
+      "id": 4,
+      "name": "Accessories"
+    },
+    {
+      "id": 5,
+      "name": "Home & Living"
+    }
+  ],
+  "links": {
+    "first": "https://api.example.com/categories?page=1",
+    "last": "https://api.example.com/categories?page=1",
+    "prev": null,
+    "next": null
+  },
+  "meta": {
+    "current_page": 1,
+    "from": 1,
+    "last_page": 1,
+    "links": [
+      {
+        "url": null,
+        "label": "&laquo; Previous",
+        "active": false
+      },
+      {
+        "url": "https://api.example.com/categories?page=1",
+        "label": "1",
+        "active": true
+      },
+      {
+        "url": null,
+        "label": "Next &raquo;",
+        "active": false
+      }
+    ],
+    "path": "https://api.example.com/categories",
+    "per_page": 15,
+    "to": 5,
+    "total": 5
+  },
+  "additional": []
+}
