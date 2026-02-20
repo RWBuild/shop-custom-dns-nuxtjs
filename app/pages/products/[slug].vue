@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import type { Product } from '~/features/products/types/product';
-import { getMockCategories, getMockProducts } from '~/mocks';
 import { formatCurrency, slugify, type CurrencyCode } from '~/features/shared/utils';
+import { getMockCategories, getMockProducts } from '~/mocks';
 
 const route = useRoute();
 const slug = route.params.slug as string;
@@ -29,6 +29,8 @@ const productImages = computed(() => {
 });
 
 const quantity = ref(1);
+const isAdded = ref(false);
+let addedTimeout: ReturnType<typeof setTimeout> | null = null;
 
 function handleAddToCart() {
   if (!product.value) return;
@@ -40,7 +42,22 @@ function handleAddToCart() {
     image: product.value.image || undefined,
   });
   notifyItemAdded(product.value.name);
+
+  if (addedTimeout) {
+    clearTimeout(addedTimeout);
+  }
+
+  isAdded.value = true;
+  addedTimeout = setTimeout(() => {
+    isAdded.value = false;
+  }, 2000);
 }
+
+onUnmounted(() => {
+  if (addedTimeout) {
+    clearTimeout(addedTimeout);
+  }
+});
 
 onMounted(async () => {
   await new Promise((resolve) => setTimeout(resolve, 800));
@@ -77,7 +94,7 @@ useSeo({
             <UIcon name="i-heroicons-chevron-right" class="size-3.5 text-gray-400" />
           </li>
           <li class="flex items-center gap-1.5 sm:gap-2">
-            <NuxtLink to="/products" class="hover:text-primary">Products</NuxtLink>
+            <NuxtLink to="#" class="hover:text-primary">Products</NuxtLink>
             <UIcon name="i-heroicons-chevron-right" class="size-3.5 text-gray-400" />
           </li>
           <li v-if="category" class="flex items-center gap-1.5 sm:gap-2">
@@ -127,11 +144,12 @@ useSeo({
             <button
               type="button"
               class="inline-flex w-fit flex-1 cursor-pointer items-center justify-center gap-2 rounded-full bg-gray-700 px-8 py-3 text-sm font-medium text-white transition-colors hover:bg-gray-800 disabled:cursor-not-allowed disabled:opacity-50 sm:flex-none"
+              :class="{ 'bg-gray-900': isAdded }"
               :disabled="product.is_sold"
               @click="handleAddToCart"
             >
               <UIcon name="i-heroicons-shopping-cart" class="size-5" />
-              <span>Add to Cart</span>
+              <span>{{ isAdded ? 'Added to Cart' : 'Add to Cart' }}</span>
             </button>
           </div>
 

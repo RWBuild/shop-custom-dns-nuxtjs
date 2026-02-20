@@ -17,7 +17,6 @@ export function useSeo(options: SeoOptions = {}) {
     twitterCard?: string;
   };
 
-  // Defaults
   const storeName = store.name || 'Store';
   const storeDescription = store.description || '';
   const storeKeywords = store.keywords || [];
@@ -29,42 +28,32 @@ export function useSeo(options: SeoOptions = {}) {
   const pageUrl = options.url || `${siteUrl}${route.path}`;
   const pageImage = options.image || `${siteUrl}${defaultImage}`;
 
-  // Merge keywords
   const keywords = [...storeKeywords, ...(options.keywords || [])];
 
-  // Set page meta
   useSeoMeta({
     title: options.title,
     description: options.description || storeDescription,
     keywords: keywords.join(', '),
-
-    // Open Graph
     ogTitle: options.title || storeName,
     ogDescription: options.description || storeDescription,
     ogImage: pageImage,
     ogUrl: pageUrl,
     ogType: options.type || 'website',
     ogSiteName: storeName,
-
-    // Twitter Card
     twitterCard: twitterCard as 'summary_large_image',
     twitterTitle: options.title || storeName,
     twitterDescription: options.description || storeDescription,
     twitterImage: pageImage,
     twitterSite: store.social?.twitter,
-
-    // Robots
     robots: options.noIndex ? 'noindex, nofollow' : 'index, follow',
   });
 
-  // Set title template
   useHead({
     titleTemplate: (title) => {
       return title ? titleTemplate.replace('%s', title) : storeName;
     },
   });
 
-  // Add Product structured data if product info provided
   if (options.product) {
     useSchemaOrg([
       defineProduct({
@@ -86,7 +75,6 @@ export function useSeo(options: SeoOptions = {}) {
   }
 }
 
-// Composable for product pages
 export function useProductSeo(product: ProductSeoData) {
   useSeo({
     title: product.name,
@@ -106,7 +94,6 @@ export function useProductSeo(product: ProductSeoData) {
   });
 }
 
-// Composable for category/collection pages
 export function useCategorySeo(category: CategorySeoData) {
   const appConfig = useAppConfig();
   const store = (appConfig.store ?? {}) as {

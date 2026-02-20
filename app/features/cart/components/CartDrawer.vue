@@ -14,6 +14,19 @@ const checkoutForm = ref({
 });
 
 const isSubmitting = ref(false);
+const showClearConfirm = ref(false);
+
+function handleClearCart() {
+  if (showClearConfirm.value) {
+    clearCart();
+    showClearConfirm.value = false;
+  } else {
+    showClearConfirm.value = true;
+    setTimeout(() => {
+      showClearConfirm.value = false;
+    }, 3000);
+  }
+}
 
 function handleCheckout() {
   if (isEmpty.value) return;
@@ -53,6 +66,7 @@ function handleBack() {
 
 watch(isOpen, (open) => {
   if (!open) {
+    showClearConfirm.value = false;
     setTimeout(() => {
       goToCart();
     }, 300);
@@ -65,7 +79,7 @@ watch(isOpen, (open) => {
     v-model:open="isOpen"
     side="right"
     :ui="{
-      content: 'w-full max-w-md',
+      content: 'w-full max-w-md h-[100dvh] min-h-screen',
     }"
   >
     <template #content>
@@ -85,14 +99,29 @@ watch(isOpen, (open) => {
               {{ currentView === 'cart' ? 'Your Cart' : 'Checkout' }}
             </h2>
           </div>
-          <button
-            type="button"
-            class="flex size-8 cursor-pointer items-center justify-center rounded-full text-gray-500 transition-colors hover:bg-gray-100 hover:text-gray-700"
-            aria-label="Close cart"
-            @click="closeDrawer"
-          >
+          <div class="flex items-center gap-2">
+            <button
+              v-if="currentView === 'cart' && !isEmpty"
+              type="button"
+              class="cursor-pointer rounded-full px-3 py-1.5 text-xs font-medium transition-colors"
+              :class="
+                showClearConfirm
+                  ? 'bg-red-100 text-red-600 hover:bg-red-200'
+                  : 'text-gray-500 hover:bg-gray-100 hover:text-gray-700'
+              "
+              @click="handleClearCart"
+            >
+              {{ showClearConfirm ? 'Confirm clear?' : 'Clear all' }}
+            </button>
+            <button
+              type="button"
+              class="flex size-8 cursor-pointer items-center justify-center rounded-full text-gray-500 transition-colors hover:bg-gray-100 hover:text-gray-700"
+              aria-label="Close cart"
+              @click="closeDrawer"
+            >
             <UIcon name="i-lucide-x" class="size-5" />
-          </button>
+            </button>
+          </div>
         </div>
 
         <Transition
@@ -142,13 +171,6 @@ watch(isOpen, (open) => {
 
               <div class="border-t border-gray-200 px-4 py-4 sm:px-6">
                 <div class="space-y-2">
-                  <div class="flex items-center justify-between text-sm">
-                    <span class="text-gray-500">Subtotal</span>
-                    <span class="font-medium text-gray-900">
-                      {{ formatCurrency(cartSummary.subtotal) }}
-                    </span>
-                  </div>
-
                   <div
                     class="flex items-center justify-between border-t border-gray-200 pt-2 text-base"
                   >

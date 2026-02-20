@@ -166,29 +166,18 @@ function isVideo(media: MediaItem): boolean {
 <template>
   <div class="flex flex-col gap-4">
     <div class="relative aspect-square overflow-hidden rounded-2xl bg-gray-100">
-      <div
-        v-if="activeMedia.type === 'video'"
-        class="h-full w-full"
-      >
+      <div v-if="activeMedia.type === 'video'" class="h-full w-full">
         <video
           ref="videoPlayerRef"
           class="h-full w-full object-contain"
           :poster="activeMedia.poster || placeholderImage"
           playsinline
         >
-          <source
-            :src="activeMedia.url"
-            type="video/mp4"
-          />
+          <source :src="activeMedia.url" type="video/mp4" />
         </video>
       </div>
 
-      <button
-        v-else
-        type="button"
-        class="h-full w-full cursor-zoom-in"
-        @click="openLightbox"
-      >
+      <button v-else type="button" class="h-full w-full cursor-zoom-in" @click="openLightbox">
         <NuxtImg
           :src="activeMedia.url || placeholderImage"
           :alt="alt"
@@ -203,10 +192,7 @@ function isVideo(media: MediaItem): boolean {
         v-if="activeMedia.type === 'image'"
         class="pointer-events-none absolute right-3 top-3 rounded-full bg-black/50 p-2 text-white"
       >
-        <UIcon
-          name="i-heroicons-magnifying-glass-plus"
-          class="size-5"
-        />
+        <UIcon name="i-heroicons-magnifying-glass-plus" class="size-5" />
       </div>
 
       <template v-if="mediaItems.length > 1">
@@ -215,20 +201,14 @@ function isVideo(media: MediaItem): boolean {
           class="absolute left-3 top-1/2 z-10 flex h-10 w-10 -translate-y-1/2 cursor-pointer items-center justify-center rounded-full bg-white/90 text-gray-700 shadow-md transition-all hover:bg-white hover:shadow-lg"
           @click.stop="previousMedia"
         >
-          <UIcon
-            name="i-heroicons-chevron-left"
-            class="size-5"
-          />
+          <UIcon name="i-heroicons-chevron-left" class="size-5" />
         </button>
         <button
           type="button"
           class="absolute right-3 top-1/2 z-10 flex h-10 w-10 -translate-y-1/2 cursor-pointer items-center justify-center rounded-full bg-white/90 text-gray-700 shadow-md transition-all hover:bg-white hover:shadow-lg"
           @click.stop="nextMedia"
         >
-          <UIcon
-            name="i-heroicons-chevron-right"
-            class="size-5"
-          />
+          <UIcon name="i-heroicons-chevron-right" class="size-5" />
         </button>
       </template>
 
@@ -240,10 +220,7 @@ function isVideo(media: MediaItem): boolean {
       </div>
     </div>
 
-    <div
-      v-if="mediaItems.length > 1"
-      class="flex gap-3 overflow-x-auto pb-1"
-    >
+    <div v-if="mediaItems.length > 1" class="flex gap-3 overflow-x-auto p-1">
       <button
         v-for="(media, index) in mediaItems"
         :key="index"
@@ -269,10 +246,7 @@ function isVideo(media: MediaItem): boolean {
           v-if="isVideo(media)"
           class="absolute inset-0 flex items-center justify-center bg-black/30"
         >
-          <UIcon
-            name="i-heroicons-play"
-            class="size-6 text-white"
-          />
+          <UIcon name="i-heroicons-play" class="size-6 text-white" />
         </div>
       </button>
     </div>

@@ -96,6 +96,11 @@ export function useProductSearch() {
     suggestions.value = [];
   }
 
+  function clearSearch() {
+    searchQuery.value = '';
+    suggestions.value = [];
+  }
+
   function selectSuggestion(product: Product) {
     saveRecentSearch(product.name);
     closeSearch();
@@ -128,6 +133,7 @@ export function useProductSearch() {
     handleInput,
     openSearch,
     closeSearch,
+    clearSearch,
     selectSuggestion,
     submitSearch,
     selectRecentSearch,

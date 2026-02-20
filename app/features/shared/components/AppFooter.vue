@@ -57,13 +57,15 @@ const information = [
           <div
             class="col-span-2 sm:col-span-1 flex justify-center sm:justify-end items-start pt-4 sm:pt-0 border-t border-gray-800 sm:border-0"
           >
-            <NuxtImg
-              src="/images/powered-by-guhemba.svg"
-              alt="Powered by Guhemba"
-              width="140"
-              height="28"
-              class="w-30 sm:w-35 lg:w-40 h-auto"
-            />
+            <a href="https://guhemba.rw" target="_blank">
+              <NuxtImg
+                src="/images/powered-by-guhemba.svg"
+                alt="Powered by Guhemba"
+                width="140"
+                height="28"
+                class="w-30 sm:w-35 lg:w-40 h-auto"
+              />
+            </a>
           </div>
         </div>
       </UContainer>
