@@ -44,15 +44,17 @@ function handleAddToCart(product: Product) {
 
 <template>
   <div>
-    <UContainer class="py-6">
-      <ShopBanner
-        image="https://images.unsplash.com/photo-1441986300917-64674bd600d8?w=1920&q=80"
-        image-alt="Shop promotional banner"
-        aspect-ratio="21/9"
-      />
-    </UContainer>
+    <div class="py-4 sm:px-4 sm:py-6 md:px-6 lg:px-8">
+      <div class="mx-auto sm:max-w-7xl">
+        <ShopBanner
+          image="https://images.unsplash.com/photo-1607082348824-0a96f2a4b9da?w=1920&q=80"
+          image-alt="Shop promotional banner"
+          height="md"
+        />
+      </div>
+    </div>
 
-    <UContainer class="py-8">
+    <UContainer class="py-6 sm:py-10">
       <h2 class="mb-4 text-sm font-bold uppercase tracking-wide text-neutral-900">
         Shop by Categories
       </h2>

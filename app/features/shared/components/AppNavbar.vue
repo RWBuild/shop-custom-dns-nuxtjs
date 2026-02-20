@@ -1,7 +1,7 @@
 <script setup lang="ts">
+import { useProductSearch } from '~/features/products/composables/useProductSearch';
 import { useRouteActive } from '~/features/shared/composables/useRouteActive';
 import { useScrollDetection } from '~/features/shared/composables/useScrollDetection';
-import { useProductSearch } from '~/features/products/composables/useProductSearch';
 
 const { cartCount } = useCart();
 const { openDrawer: openCartDrawer } = useCartDrawer();
@@ -32,6 +32,7 @@ const navigation = [
 ];
 
 const isMobileMenuOpen = ref(false);
+const isMobileSearchOpen = ref(false);
 const searchInputRef = ref<HTMLInputElement | null>(null);
 
 function toggleSearch() {
@@ -97,15 +98,11 @@ onUnmounted(() => {
             :key="item.to"
             :to="item.to"
             class="nav-link relative px-1 py-5 text-xs lg:text-sm font-medium transition-colors"
-            :class="
-              isActive(item.to)
-                ? 'text-primary-600'
-                : 'text-gray-600 hover:text-primary-600'
-            "
+            :class="isActive(item.to) ? 'text-primary-600' : 'text-gray-600 hover:text-primary-600'"
           >
             {{ item.label }}
             <span
-              class="absolute bottom-0 left-1/2 -translate-x-1/2 h-0.75 bg-primary rounded-full transition-all duration-300 ease-out"
+              class="absolute bottom-0 left-1/2 -translate-x-1/2 h-0.5 bg-primary rounded-full transition-all duration-300 ease-out"
               :class="isActive(item.to) ? 'w-2/5' : 'w-0'"
             />
           </NuxtLink>
@@ -167,7 +164,7 @@ onUnmounted(() => {
             size="sm"
             class="sm:hidden cursor-pointer"
             aria-label="Search"
-            @click="isMobileMenuOpen = true"
+            @click="isMobileSearchOpen = true"
           />
 
           <button
@@ -176,10 +173,7 @@ onUnmounted(() => {
             aria-label="Cart"
             @click="openCartDrawer"
           >
-            <UIcon
-              name="i-lucide-shopping-cart"
-              class="w-4 h-4 text-gray-700"
-            />
+            <UIcon name="i-lucide-shopping-cart" class="w-4 h-4 text-gray-700" />
             <span
               class="flex items-center justify-center min-w-5 h-5 px-1.5 text-[10px] font-semibold text-white bg-primary rounded-full transition-transform"
               :class="isCartAnimating ? 'cart-badge-bounce' : ''"
@@ -191,11 +185,8 @@ onUnmounted(() => {
       </nav>
     </UContainer>
 
-    <AppMobileDrawer
-      v-model:open="isMobileMenuOpen"
-      :navigation="navigation"
-      @search="submitSearch"
-    />
+    <AppMobileDrawer v-model:open="isMobileMenuOpen" :navigation="navigation" />
+    <AppMobileSearch v-model:open="isMobileSearchOpen" />
   </header>
 </template>
 
@@ -207,7 +198,7 @@ onUnmounted(() => {
 
 @media (min-width: 1024px) {
   .h-18 {
-    height: 4.5rem;
+    height: 4.5rem; 
   }
 
   .lg\:size-md {

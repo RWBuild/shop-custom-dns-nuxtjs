@@ -1,4 +1,3 @@
-// Pagination types for API responses
 export interface PaginationLinks {
   first: string | null;
   last: string | null;

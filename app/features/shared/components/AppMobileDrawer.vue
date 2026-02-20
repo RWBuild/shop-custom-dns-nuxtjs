@@ -15,11 +15,9 @@ const props = defineProps<Props>();
 
 const emit = defineEmits<{
   'update:open': [value: boolean];
-  search: [query: string];
 }>();
 
 const { isActive } = useRouteActive();
-const searchQuery = ref('');
 
 const isOpen = computed({
   get: () => props.open,
@@ -28,13 +26,6 @@ const isOpen = computed({
 
 function closeDrawer() {
   isOpen.value = false;
-}
-
-function handleSearch() {
-  if (searchQuery.value.trim()) {
-    emit('search', searchQuery.value);
-    closeDrawer();
-  }
 }
 
 function handleNavClick() {
@@ -47,36 +38,26 @@ function handleNavClick() {
     v-model:open="isOpen"
     side="left"
     class="lg:hidden"
-    :ui="{ content: 'w-[280px] max-w-[80vw]' }"
+    :ui="{ content: 'w-[280px] max-w-[80vw] h-[100dvh] min-h-screen' }"
   >
     <template #content>
-      <div class="flex flex-col h-full bg-white">
+      <div class="flex h-full flex-col bg-white">
         <div class="flex items-center justify-between px-4 py-4">
           <NuxtLink
             to="/"
-            class="text-sm font-semibold text-gray-800 tracking-tight"
+            class="text-sm font-semibold tracking-tight text-gray-800"
             @click="handleNavClick"
           >
             Logo
           </NuxtLink>
           <button
             type="button"
-            class="p-1.5 -mr-1.5 text-gray-500 hover:text-gray-700 transition-colors"
+            class="-mr-1.5 cursor-pointer p-1.5 text-gray-500 transition-colors hover:text-gray-700"
             aria-label="Close menu"
             @click="closeDrawer"
           >
-            <UIcon name="i-lucide-x" class="w-4 h-4" />
+            <UIcon name="i-lucide-x" class="size-4" />
           </button>
-        </div>
-
-        <div class="px-4 pb-4">
-          <AppInput
-            v-model="searchQuery"
-            type="text"
-            placeholder="Search..."
-            icon="i-lucide-search"
-            @keyup.enter="handleSearch"
-          />
         </div>
 
         <div class="mx-4 border-t border-gray-100" />
@@ -86,16 +67,16 @@ function handleNavClick() {
             v-for="item in navigation"
             :key="item.to"
             :to="item.to"
-            class="flex items-center gap-3 px-3 py-2.5 mb-0.5 text-xs font-medium rounded-lg transition-colors"
+            class="mb-0.5 flex items-center gap-3 rounded-lg px-3 py-2.5 text-xs font-medium transition-colors"
             :class="
               isActive(item.to)
-                ? 'text-primary-600 bg-primary-50'
-                : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50'
+                ? 'bg-primary-50 text-primary-600'
+                : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'
             "
             @click="handleNavClick"
           >
             <span
-              class="w-1 h-1 rounded-full transition-colors"
+              class="size-1 rounded-full transition-colors"
               :class="isActive(item.to) ? 'bg-primary' : 'bg-gray-300'"
             />
             {{ item.label }}

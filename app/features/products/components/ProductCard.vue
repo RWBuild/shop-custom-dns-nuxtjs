@@ -12,19 +12,36 @@ const emit = defineEmits<{
   addToCart: [product: Product];
 }>();
 
+const isAdded = ref(false);
+let addedTimeout: ReturnType<typeof setTimeout> | null = null;
+
 function handleAddToCart(product: Product) {
   emit('addToCart', product);
+
+  if (addedTimeout) {
+    clearTimeout(addedTimeout);
+  }
+
+  isAdded.value = true;
+  addedTimeout = setTimeout(() => {
+    isAdded.value = false;
+  }, 2000);
 }
+
+onUnmounted(() => {
+  if (addedTimeout) {
+    clearTimeout(addedTimeout);
+  }
+});
 
 const placeholderImage = 'https://placehold.co/400x400/f3f6f8/7493b2?text=No+Image';
 </script>
 
 <template>
-  <article class="group flex flex-col rounded-xl p-2 transition-colors duration-200 hover:bg-gray-50 sm:rounded-2xl sm:p-3">
-    <NuxtLink
-      :to="`/products/${product.slug}`"
-      class="block"
-    >
+  <article
+    class="group flex h-full flex-col rounded-xl p-2 transition-colors duration-200 hover:bg-gray-50 sm:rounded-2xl sm:p-3"
+  >
+    <NuxtLink :to="`/products/${product.slug}`" class="block">
       <div class="relative aspect-square overflow-hidden rounded-lg bg-gray-100 sm:rounded-xl">
         <NuxtImg
           :src="product.image || placeholderImage"
@@ -44,12 +61,11 @@ const placeholderImage = 'https://placehold.co/400x400/f3f6f8/7493b2?text=No+Ima
       </div>
     </NuxtLink>
 
-    <div class="mt-2 flex flex-col gap-0.5 sm:mt-3 sm:gap-1">
-      <NuxtLink
-        :to="`/products/${product.slug}`"
-        class="block"
-      >
-        <h3 class="line-clamp-2 text-xs font-medium text-neutral-900 transition-colors duration-200 group-hover:text-primary sm:line-clamp-1 sm:text-sm">
+    <div class="mt-2 flex flex-1 flex-col gap-0.5 sm:mt-3 sm:gap-1">
+      <NuxtLink :to="`/products/${product.slug}`" class="block">
+        <h3
+          class="line-clamp-2 text-xs font-medium text-neutral-900 transition-colors duration-200 group-hover:text-primary sm:line-clamp-1 sm:text-sm"
+        >
           {{ product.name }}
         </h3>
       </NuxtLink>
@@ -60,15 +76,13 @@ const placeholderImage = 'https://placehold.co/400x400/f3f6f8/7493b2?text=No+Ima
 
       <button
         type="button"
-        class="mt-1.5 inline-flex w-full cursor-pointer items-center justify-center gap-1 rounded-full bg-gray-700 px-3 py-1.5 text-[10px] font-medium text-white transition-colors duration-200 hover:bg-gray-800 disabled:cursor-not-allowed disabled:opacity-50 sm:mt-2 sm:w-fit sm:gap-1.5 sm:px-4 sm:py-2 sm:text-xs"
+        class="mt-auto inline-flex w-full cursor-pointer items-center justify-center gap-1 rounded-full bg-gray-700 px-3 py-1.5 pt-2 text-[10px] font-medium text-white transition-colors duration-200 hover:bg-gray-800 disabled:cursor-not-allowed disabled:opacity-50 sm:w-fit sm:gap-1.5 sm:px-4 sm:py-2 sm:text-xs"
+        :class="{ 'bg-gray-900': isAdded }"
         :disabled="product.is_sold"
         @click.prevent="handleAddToCart(product)"
       >
-        <UIcon
-          name="i-heroicons-shopping-cart"
-          class="size-3 sm:size-3.5"
-        />
-        <span>Add to cart</span>
+        <UIcon name="i-heroicons-shopping-cart" class="size-3 sm:size-3.5" />
+        <span>{{ isAdded ? 'Added to cart' : 'Add to cart' }}</span>
       </button>
     </div>
   </article>

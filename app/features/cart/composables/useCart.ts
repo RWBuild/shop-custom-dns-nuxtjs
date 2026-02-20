@@ -46,14 +46,8 @@ export function useCart() {
   const isEmpty = computed(() => cartItems.value.length === 0);
 
   const cartSummary = computed<CartSummary>(() => {
-    const subtotal = cartTotal.value;
-    const tax = subtotal * 0.1;
-    const shipping = subtotal > 100 ? 0 : 10;
     return {
-      subtotal,
-      tax,
-      shipping,
-      total: subtotal + tax + shipping,
+      total: cartTotal.value,
       itemCount: cartCount.value,
     };
   });
