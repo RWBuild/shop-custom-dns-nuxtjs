@@ -99,7 +99,7 @@ watch(isOpen, (open) => {
     v-model:open="isOpen"
     side="right"
     :ui="{
-      content: 'w-full max-w-md h-[100dvh] min-h-screen',
+      content: 'w-full max-w-md h-[100dvh] min-h-screen z-50',
     }"
   >
     <template #content>
@@ -139,7 +139,7 @@ watch(isOpen, (open) => {
               aria-label="Close cart"
               @click="closeDrawer"
             >
-            <UIcon name="i-lucide-x" class="size-5" />
+              <UIcon name="i-lucide-x" class="size-5" />
             </button>
           </div>
         </div>
@@ -262,13 +262,7 @@ watch(isOpen, (open) => {
                     Phone
                     <span class="text-red-500">*</span>
                   </label>
-                  <AppInput
-                    id="phone"
-                    v-model="checkoutForm.phone"
-                    type="tel"
-                    placeholder="+250 788 123 456"
-                    required
-                  />
+                  <AppPhoneNumberInput id="phone" v-model="checkoutForm.phone" required />
                 </div>
 
                 <div>
@@ -322,10 +316,7 @@ watch(isOpen, (open) => {
             </div>
 
             <div class="border-t border-gray-200 px-4 py-4 sm:px-6">
-              <div
-                v-if="checkoutError"
-                class="mb-3 rounded-lg bg-red-50 p-3 text-sm text-red-600"
-              >
+              <div v-if="checkoutError" class="mb-3 rounded-lg bg-red-50 p-3 text-sm text-red-600">
                 {{ checkoutError }}
               </div>
 

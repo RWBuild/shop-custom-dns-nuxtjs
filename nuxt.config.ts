@@ -77,6 +77,7 @@ export default defineNuxtConfig({
       shopSlug: process.env.SHOP_SLUG || '',
       shopId: process.env.SHOP_ID || '',
       fontFamily,
+      primaryColor: process.env.LIGHT_THEME_COLOR || '#00a1de',
     },
   },
 
