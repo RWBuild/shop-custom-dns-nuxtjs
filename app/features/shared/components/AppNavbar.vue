@@ -8,6 +8,7 @@ const { openDrawer: openCartDrawer } = useCartDrawer();
 const { isAnimating: isCartAnimating } = useCartNotification();
 const { isActive } = useRouteActive();
 const { isScrolled } = useScrollDetection();
+const { logoUrl, shopName } = useShopInfo();
 
 const {
   searchQuery,
@@ -89,7 +90,14 @@ onUnmounted(() => {
         />
 
         <NuxtLink to="/" class="flex items-center gap-1.5 sm:gap-2">
-          <span class="text-base sm:text-lg font-semibold text-gray-900">Logo</span>
+          <NuxtImg
+            v-if="logoUrl"
+            :src="logoUrl"
+            :alt="shopName"
+            class="h-8 sm:h-10 w-auto object-contain"
+            loading="eager"
+          />
+          <span v-else class="text-base sm:text-lg font-semibold text-gray-900">{{ shopName || 'Logo' }}</span>
         </NuxtLink>
 
         <div class="hidden lg:flex items-center gap-4 xl:gap-6">

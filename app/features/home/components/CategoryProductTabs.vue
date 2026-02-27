@@ -1,21 +1,23 @@
 <script setup lang="ts">
-import type { Product } from '~/features/products/types/product';
+import type { Product, ProductListItem } from '~/features/products/types/product';
 import type { Category } from '~/features/products/types/category';
+
+type ProductType = Product | ProductListItem;
 
 export interface CategoryWithProducts extends Category {
   slug: string;
-  products: Product[];
+  products: ProductType[];
 }
 
 interface Props {
   categories: CategoryWithProducts[];
-  allProducts: Product[];
+  allProducts: ProductType[];
 }
 
 const props = defineProps<Props>();
 
 const emit = defineEmits<{
-  addToCart: [product: Product];
+  addToCart: [product: ProductType];
 }>();
 
 const activeTab = ref('all');
@@ -38,7 +40,7 @@ const activeProducts = computed(() => {
   return category?.products ?? [];
 });
 
-function handleAddToCart(product: Product) {
+function handleAddToCart(product: ProductType) {
   emit('addToCart', product);
 }
 
