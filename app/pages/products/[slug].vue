@@ -1,26 +1,36 @@
 <script setup lang="ts">
-import type { Product } from '~/features/products/types/product';
-import { formatCurrency, slugify, type CurrencyCode } from '~/features/shared/utils';
-import { getMockCategories, getMockProducts } from '~/mocks';
+import type { ProductImage } from '~/features/products/types/product';
 
 const route = useRoute();
 const slug = route.params.slug as string;
 const { addItem } = useCart();
 const { notifyItemAdded } = useCartNotification();
+const { formatPrice } = useCurrency();
 
-const isLoading = ref(true);
-const product = ref<Product | undefined>(undefined);
-const category = ref<{ id: number; name: string } | null>(null);
+const productsStore = useProductsStore();
+
+const isLoading = computed(() => productsStore.isLoadingProduct);
+const product = computed(() => productsStore.currentProduct);
+const error = computed(() => productsStore.error);
+
+const category = computed(() => {
+  if (!product.value?.product_type) return null;
+  return product.value.product_type;
+});
 
 const categorySlug = computed(() => {
   if (!category.value) return '';
-  return slugify(category.value.name);
+  return category.value.name.toLowerCase().replace(/\s+/g, '-');
 });
 
 const productImages = computed(() => {
   if (!product.value) return [];
   if (product.value.images && product.value.images.length > 0) {
-    return product.value.images;
+    // Handle both array of ProductImage objects and array of strings
+    return product.value.images.map((img) => {
+      if (typeof img === 'string') return img;
+      return (img as ProductImage).url;
+    });
   }
   if (product.value.image) {
     return [product.value.image];
@@ -57,26 +67,21 @@ onUnmounted(() => {
   if (addedTimeout) {
     clearTimeout(addedTimeout);
   }
+  productsStore.clearCurrentProduct();
 });
 
+// Fetch product on mount
 onMounted(async () => {
-  await new Promise((resolve) => setTimeout(resolve, 800));
-
-  const allProducts = getMockProducts();
-  const allCategories = getMockCategories();
-
-  product.value = allProducts.find((p) => p.slug === slug);
-
-  if (product.value?.category_id) {
-    category.value = allCategories.find((c) => c.id === product.value?.category_id) || null;
-  }
-
-  isLoading.value = false;
+  await productsStore.fetchProductBySlug(slug);
 });
 
-useSeo({
-  title: product.value?.name || 'Product',
-  description: product.value?.short_description || '',
+// Dynamic SEO
+useHead({
+  title: computed(() => product.value?.name || 'Product'),
+});
+
+useSeoMeta({
+  description: computed(() => product.value?.short_description || ''),
 });
 </script>
 
@@ -94,7 +99,7 @@ useSeo({
             <UIcon name="i-heroicons-chevron-right" class="size-3.5 text-gray-400" />
           </li>
           <li class="flex items-center gap-1.5 sm:gap-2">
-            <NuxtLink to="#" class="hover:text-primary">Products</NuxtLink>
+            <NuxtLink to="/" class="hover:text-primary">Products</NuxtLink>
             <UIcon name="i-heroicons-chevron-right" class="size-3.5 text-gray-400" />
           </li>
           <li v-if="category" class="flex items-center gap-1.5 sm:gap-2">
@@ -120,7 +125,7 @@ useSeo({
           </h1>
 
           <p class="mt-4 text-2xl font-bold text-primary sm:text-3xl">
-            {{ formatCurrency(product.price, product.currency as CurrencyCode) }}
+            {{ formatPrice(product.price) }}
           </p>
 
           <div v-if="product.is_sold" class="mt-4">
@@ -143,8 +148,8 @@ useSeo({
 
             <button
               type="button"
-              class="inline-flex w-fit flex-1 cursor-pointer items-center justify-center gap-2 rounded-full bg-gray-700 px-8 py-3 text-sm font-medium text-white transition-colors hover:bg-gray-800 disabled:cursor-not-allowed disabled:opacity-50 sm:flex-none"
-              :class="{ 'bg-gray-900': isAdded }"
+              class="inline-flex w-fit flex-1 cursor-pointer items-center justify-center gap-2 rounded-full bg-primary px-8 py-3 text-sm font-medium text-white transition-colors hover:bg-primary/75 disabled:cursor-not-allowed disabled:opacity-50 sm:flex-none"
+              :class="{ 'bg-primary/85': isAdded }"
               :disabled="product.is_sold"
               @click="handleAddToCart"
             >
@@ -180,6 +185,18 @@ useSeo({
           </div>
         </div>
       </div>
+    </UContainer>
+
+    <UContainer v-else-if="error" class="py-20 text-center">
+      <UIcon name="i-heroicons-exclamation-circle" class="mx-auto size-16 text-gray-300" />
+      <h1 class="mt-4 text-2xl font-bold text-gray-900">Product Not Found</h1>
+      <p class="mt-2 text-gray-500">
+        The product you're looking for doesn't exist or has been removed.
+      </p>
+      <NuxtLink to="/" class="mt-6 inline-flex items-center gap-2 text-primary hover:underline">
+        <UIcon name="i-heroicons-arrow-left" class="size-4" />
+        <span>Back to Home</span>
+      </NuxtLink>
     </UContainer>
 
     <UContainer v-else class="py-20 text-center">
