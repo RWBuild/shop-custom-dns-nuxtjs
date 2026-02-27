@@ -1,6 +1,9 @@
 export default defineAppConfig({
+  shopInfo: {},
+
   store: {
-    name: 'Store Name',
+    name: process.env.SHOP_NAME || 'Store Name',
+    slug: process.env.SHOP_SLUG || '',
     tagline: 'Your Store Tagline',
     description:
       'Discover amazing products at great prices. Shop our curated collection of quality items.',
@@ -20,7 +23,7 @@ export default defineAppConfig({
   },
 
   seo: {
-    titleTemplate: '%s | Store Name',
+    titleTemplate: `%s | ${process.env.SHOP_NAME || 'Store Name'}`,
     defaultImage: '/og-image.png',
     twitterCard: 'summary_large_image',
   },

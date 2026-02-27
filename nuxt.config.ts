@@ -1,3 +1,5 @@
+const fontFamily = process.env.FONT_FAMILY || 'Inter';
+
 export default defineNuxtConfig({
   compatibilityDate: '2025-07-15',
   devtools: { enabled: true },
@@ -8,9 +10,36 @@ export default defineNuxtConfig({
     '@nuxt/fonts',
     '@nuxt/image',
     '@nuxtjs/seo',
+    '@pinia/nuxt',
+    '~/modules/shop-content',
   ],
 
   css: ['~/assets/css/main.css'],
+
+  fonts: {
+    provider: 'google',
+    families: [
+      {
+        name: fontFamily,
+        weights: [400, 500, 600, 700],
+        styles: ['normal'],
+        global: true,
+      },
+    ],
+    defaults: {
+      weights: [400, 500, 600, 700],
+    },
+  },
+
+  vite: {
+    css: {
+      preprocessorOptions: {
+        scss: {
+          additionalData: `$font-family: '${fontFamily}';`,
+        },
+      },
+    },
+  },
 
   components: [
     { path: '~/features/shared/components', pathPrefix: false },
@@ -39,16 +68,21 @@ export default defineNuxtConfig({
 
   runtimeConfig: {
     public: {
+      shopPublicToken: process.env.SHOP_PUBLIC_TOKEN || '',
+      shopSecretKey: process.env.SHOP_SECRET_KEY || '',
       siteUrl: process.env.NUXT_PUBLIC_SITE_URL || 'https://example.com',
-      apiBaseUrl:
-        process.env.NUXT_PUBLIC_API_BASE_URL ||
-        'https://test.pos.guhemba.com/api/third-party/v1/shops',
+      shopBaseUrl: process.env.GUHEMBA_SHOP_BASE_URL || 'https://shops.guhemba.rw',
+      posBaseUrl: process.env.POS_BASE_URL || 'https://pos.guhemba.rw',
+      shopName: process.env.SHOP_NAME || 'Store Name',
+      shopSlug: process.env.SHOP_SLUG || '',
+      shopId: process.env.SHOP_ID || '',
+      fontFamily,
     },
   },
 
   site: {
     url: process.env.NUXT_PUBLIC_SITE_URL || 'https://example.com',
-    name: 'Store Name',
+    name: process.env.SHOP_NAME || 'Store Name',
     description: 'Your store description goes here',
     defaultLocale: 'en',
   },
