@@ -4,7 +4,9 @@ const { themeStyles } = useTheme();
 useHead({
   style: [
     {
-      innerHTML: themeStyles,
+      key: 'app-theme',
+      innerHTML: themeStyles.value,
+      tagPosition: 'bodyClose',
     },
   ],
 });

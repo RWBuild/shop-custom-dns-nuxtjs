@@ -65,7 +65,7 @@ const placeholderImage = 'https://placehold.co/400x400/f3f6f8/7493b2?text=No+Ima
     <div class="mt-2 flex flex-1 flex-col gap-0.5 sm:mt-3 sm:gap-1">
       <NuxtLink :to="`/products/${product.slug}`" class="block">
         <h3
-          class="line-clamp-2 text-xs font-medium text-neutral-900 transition-colors duration-200 group-hover:text-primary sm:line-clamp-1 sm:text-sm"
+          class="line-clamp-2 text-xs font-medium text-neutral-900 transition-colors duration-200 group-hover:text-primary sm:line-clamp-1 sm:text-sm capitalize"
         >
           {{ product.name }}
         </h3>

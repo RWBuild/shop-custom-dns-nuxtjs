@@ -9,6 +9,18 @@
 }
 
 @theme {
+  --color-primary-50: #e6f7fd;
+  --color-primary-100: #ddeff7;
+  --color-primary-200: #b3e0f0;
+  --color-primary-300: #80cfe8;
+  --color-primary-400: #4dbee0;
+  --color-primary-500: #00a1de;
+  --color-primary-600: #0081b2;
+  --color-primary-700: #006186;
+  --color-primary-800: #00405a;
+  --color-primary-900: #00202d;
+  --color-primary-950: #001017;
+
   --color-gray-50: #f9fbfd;
   --color-gray-100: #f5f7f8;
   --color-gray-200: #f3f6f8;
