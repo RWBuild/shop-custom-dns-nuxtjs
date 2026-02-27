@@ -1,8 +1,10 @@
 <script setup lang="ts">
-import type { Product } from '~/features/products/types/product';
+import type { Product, ProductListItem } from '~/features/products/types/product';
+
+type ProductType = Product | ProductListItem;
 
 interface Props {
-  products: Product[];
+  products: ProductType[];
   columns?: 2 | 3 | 4;
 }
 
@@ -11,10 +13,10 @@ withDefaults(defineProps<Props>(), {
 });
 
 const emit = defineEmits<{
-  addToCart: [product: Product];
+  addToCart: [product: ProductType];
 }>();
 
-function handleAddToCart(product: Product) {
+function handleAddToCart(product: ProductType) {
   emit('addToCart', product);
 }
 </script>

@@ -1,8 +1,8 @@
 <script setup lang="ts">
-import type { CategoryWithProducts } from '~/features/home/components/CategoryProductTabs.vue';
-import type { Product } from '~/features/products/types/product';
-import { getMockCategories, getMockProducts, getMockProductsByCategory } from '~/mocks';
+import type { Product, ProductListItem } from '~/features/products/types/product';
 import { slugify } from '~/features/shared/utils';
+
+type ProductType = Product | ProductListItem;
 
 useSeo({
   title: 'Home',
@@ -12,25 +12,32 @@ useSeo({
 const { addItem } = useCart();
 const { notifyItemAdded } = useCartNotification();
 
-const isLoading = ref(true);
-const allProducts = ref<Product[]>([]);
-const categories = ref<CategoryWithProducts[]>([]);
+const productsStore = useProductsStore();
+const categoriesStore = useCategoriesStore();
 
-onMounted(async () => {
-  await new Promise((resolve) => setTimeout(resolve, 1000));
+const isLoading = computed(() => productsStore.isLoading || categoriesStore.isLoading);
 
-  const mockCategories = getMockCategories();
-  allProducts.value = getMockProducts();
-  categories.value = mockCategories.map((cat) => ({
+// Transform categories to include products (for initial "All" tab we show all products)
+const categoriesWithProducts = computed(() => {
+  return categoriesStore.categories.map((cat) => ({
     ...cat,
     slug: slugify(cat.name),
-    products: getMockProductsByCategory(cat.id),
+    products: productsStore.products.filter((p) => p.product_type_id === cat.id),
   }));
-
-  isLoading.value = false;
 });
 
-function handleAddToCart(product: Product) {
+// All products for the "All" tab
+const allProducts = computed(() => productsStore.products);
+
+// Fetch data on mount
+onMounted(async () => {
+  await Promise.all([
+    categoriesStore.fetchCategories(),
+    productsStore.fetchProducts(),
+  ]);
+});
+
+function handleAddToCart(product: ProductType) {
   addItem({
     productId: String(product.id),
     name: product.name,
@@ -40,17 +47,36 @@ function handleAddToCart(product: Product) {
   });
   notifyItemAdded(product.name);
 }
+
+// Infinite scroll with IntersectionObserver
+const loadMoreTrigger = ref<HTMLElement | null>(null);
+
+onMounted(() => {
+  if (!loadMoreTrigger.value) return;
+
+  const observer = new IntersectionObserver(
+    async (entries) => {
+      const entry = entries[0];
+      if (entry?.isIntersecting && productsStore.hasMorePages && !productsStore.isLoading) {
+        await productsStore.loadMore();
+      }
+    },
+    { rootMargin: '100px' },
+  );
+
+  watch(loadMoreTrigger, (el) => {
+    if (el) observer.observe(el);
+  }, { immediate: true });
+
+  onUnmounted(() => observer.disconnect());
+});
 </script>
 
 <template>
   <div>
     <div class="py-4 sm:px-4 sm:py-6 md:px-6 lg:px-8">
       <div class="mx-auto sm:max-w-7xl">
-        <ShopBanner
-          image="https://images.unsplash.com/photo-1607082348824-0a96f2a4b9da?w=1920&q=80"
-          image-alt="Shop promotional banner"
-          height="md"
-        />
+        <ShopBanner height="md" />
       </div>
     </div>
 
@@ -59,13 +85,31 @@ function handleAddToCart(product: Product) {
         Shop by Categories
       </h2>
 
-      <CategoryTabsSkeleton v-if="isLoading" />
+      <CategoryTabsSkeleton v-if="isLoading && !allProducts.length" />
       <CategoryProductTabs
         v-else
-        :categories="categories"
+        :categories="categoriesWithProducts"
         :all-products="allProducts"
         @add-to-cart="handleAddToCart"
       />
+
+      <!-- Load more trigger for infinite scroll -->
+      <div
+        v-if="productsStore.hasMorePages"
+        ref="loadMoreTrigger"
+        class="flex justify-center py-8"
+      >
+        <UIcon
+          v-if="productsStore.isLoading"
+          name="i-lucide-loader-2"
+          class="size-6 animate-spin text-primary"
+        />
+      </div>
+
+      <!-- Error state -->
+      <div v-if="productsStore.error" class="mt-4 rounded-lg bg-red-50 p-4 text-center text-red-600">
+        {{ productsStore.error }}
+      </div>
     </UContainer>
   </div>
 </template>

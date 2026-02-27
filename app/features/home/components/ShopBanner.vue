@@ -11,14 +11,20 @@ interface Props {
   overlay?: boolean;
 }
 
-withDefaults(defineProps<Props>(), {
-  image: '/images/shop-banner.jpg',
+const props = withDefaults(defineProps<Props>(), {
+  image: '',
   imageAlt: 'Shop promotional banner',
   link: '',
   focalPoint: 'center',
   height: 'md',
   overlay: false,
 });
+
+const { bannerUrl, shopName } = useShopInfo();
+
+// Use prop image if provided, otherwise use shop banner from content
+const bannerImage = computed(() => props.image || bannerUrl.value || '/images/shop-banner.jpg');
+const bannerAlt = computed(() => props.imageAlt || `${shopName.value} banner`);
 
 const heightClasses = {
   sm: 'h-32 sm:h-40 md:h-48 lg:h-56',
@@ -43,8 +49,8 @@ const focalPointClasses = {
       :class="[heightClasses[height], { 'cursor-pointer': link }]"
     >
       <NuxtImg
-        :src="image"
-        :alt="imageAlt"
+        :src="bannerImage"
+        :alt="bannerAlt"
         class="absolute inset-0 h-full w-full object-cover"
         :class="focalPointClasses[focalPoint]"
         loading="eager"

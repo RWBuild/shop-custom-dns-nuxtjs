@@ -1,37 +1,14 @@
 @import 'tailwindcss';
 @import '@nuxt/ui';
 
+@layer base {
+  html,
+  body {
+    font-family: var(--font-sans);
+  }
+}
+
 @theme {
-  /* Brand Primary Colors */
-  --color-primary-50: #e6f7fd;
-  --color-primary-100: #ddeff7;
-  --color-primary-200: #b3e0f0;
-  --color-primary-300: #80cfe8;
-  --color-primary-400: #4dbee0;
-  --color-primary-500: #00a1de;
-  --color-primary-600: #0081b2;
-  --color-primary-700: #006186;
-  --color-primary-800: #00405a;
-  --color-primary-900: #00202d;
-  --color-primary-950: #001017;
-  --color-primary: #00a1de;
-  --color-primary-light: #ddeff7;
-
-  /* Brand Secondary Colors */
-  --color-secondary-50: #fefce8;
-  --color-secondary-100: #fef9c3;
-  --color-secondary-200: #fef08a;
-  --color-secondary-300: #fde047;
-  --color-secondary-400: #facc15;
-  --color-secondary-500: #f7c913;
-  --color-secondary-600: #eab308;
-  --color-secondary-700: #ca8a04;
-  --color-secondary-800: #a16207;
-  --color-secondary-900: #854d0e;
-  --color-secondary-950: #713f12;
-  --color-secondary: #f7c913;
-
-  /* Brand Gray Colors */
   --color-gray-50: #f9fbfd;
   --color-gray-100: #f5f7f8;
   --color-gray-200: #f3f6f8;
@@ -56,10 +33,8 @@
   --color-gray-brand-7: #fbfbfb;
   --color-gray-brand-8: #f5f7f8;
 
-  /* Font families */
-  --font-sans: 'Plus Jakarta Sans', ui-sans-serif, system-ui, sans-serif;
+  --font-sans: ui-sans-serif, system-ui, sans-serif;
 
-  /* Border radius */
   --radius-sm: 0.25rem;
   --radius-md: 0.375rem;
   --radius-lg: 0.5rem;

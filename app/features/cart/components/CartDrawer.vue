@@ -4,17 +4,19 @@ import { formatCurrency } from '~/features/shared/utils';
 const { isOpen, currentView, closeDrawer, goToCheckout, goToCart } = useCartDrawer();
 const { items, isEmpty, cartSummary, incrementQuantity, decrementQuantity, removeItem, clearCart } =
   useCart();
+const { createInvoice, isSubmitting, error: checkoutError, reset: resetCheckout } = useCheckout();
 
 const checkoutForm = ref({
   firstName: '',
   lastName: '',
   email: '',
+  phone: '',
   address: '',
   description: '',
 });
 
-const isSubmitting = ref(false);
 const showClearConfirm = ref(false);
+const orderSuccess = ref(false);
 
 function handleClearCart() {
   if (showClearConfirm.value) {
@@ -38,26 +40,42 @@ async function handlePlaceOrder() {
     !checkoutForm.value.firstName ||
     !checkoutForm.value.lastName ||
     !checkoutForm.value.email ||
+    !checkoutForm.value.phone ||
     !checkoutForm.value.address
   ) {
     return;
   }
 
-  isSubmitting.value = true;
+  try {
+    await createInvoice(
+      {
+        name: `${checkoutForm.value.firstName} ${checkoutForm.value.lastName}`.trim(),
+        email: checkoutForm.value.email,
+        phone: checkoutForm.value.phone,
+        address: checkoutForm.value.address,
+      },
+      items.value,
+      checkoutForm.value.description
+    );
 
-  await new Promise((resolve) => setTimeout(resolve, 1500));
+    orderSuccess.value = true;
+    clearCart();
+    checkoutForm.value = {
+      firstName: '',
+      lastName: '',
+      email: '',
+      phone: '',
+      address: '',
+      description: '',
+    };
 
-  clearCart();
-  checkoutForm.value = {
-    firstName: '',
-    lastName: '',
-    email: '',
-    address: '',
-    description: '',
-  };
-
-  isSubmitting.value = false;
-  closeDrawer();
+    setTimeout(() => {
+      orderSuccess.value = false;
+      closeDrawer();
+    }, 2000);
+  } catch {
+    // Error is already set in the composable
+  }
 }
 
 function handleBack() {
@@ -67,6 +85,8 @@ function handleBack() {
 watch(isOpen, (open) => {
   if (!open) {
     showClearConfirm.value = false;
+    orderSuccess.value = false;
+    resetCheckout();
     setTimeout(() => {
       goToCart();
     }, 300);
@@ -238,6 +258,20 @@ watch(isOpen, (open) => {
                 </div>
 
                 <div>
+                  <label for="phone" class="mb-1.5 block text-sm font-medium text-gray-700">
+                    Phone
+                    <span class="text-red-500">*</span>
+                  </label>
+                  <AppInput
+                    id="phone"
+                    v-model="checkoutForm.phone"
+                    type="tel"
+                    placeholder="+250 788 123 456"
+                    required
+                  />
+                </div>
+
+                <div>
                   <label for="address" class="mb-1.5 block text-sm font-medium text-gray-700">
                     Address
                     <span class="text-red-500">*</span>
@@ -288,19 +322,40 @@ watch(isOpen, (open) => {
             </div>
 
             <div class="border-t border-gray-200 px-4 py-4 sm:px-6">
+              <div
+                v-if="checkoutError"
+                class="mb-3 rounded-lg bg-red-50 p-3 text-sm text-red-600"
+              >
+                {{ checkoutError }}
+              </div>
+
+              <div
+                v-if="orderSuccess"
+                class="mb-3 flex items-center gap-2 rounded-lg bg-green-50 p-3 text-sm text-green-600"
+              >
+                <UIcon name="i-lucide-check-circle" class="size-5" />
+                Order placed successfully!
+              </div>
+
               <button
                 type="submit"
                 class="flex w-full cursor-pointer items-center justify-center gap-2 rounded-full bg-primary px-6 py-3 text-sm font-medium text-white transition-colors hover:bg-primary/90 disabled:cursor-not-allowed disabled:opacity-50"
                 :disabled="
                   isSubmitting ||
+                  orderSuccess ||
                   !checkoutForm.firstName ||
                   !checkoutForm.lastName ||
                   !checkoutForm.email ||
+                  !checkoutForm.phone ||
                   !checkoutForm.address
                 "
                 @click="handlePlaceOrder"
               >
                 <UIcon v-if="isSubmitting" name="i-lucide-loader-2" class="size-4 animate-spin" />
+                <template v-else-if="orderSuccess">
+                  <UIcon name="i-lucide-check" class="size-4" />
+                  Order Placed!
+                </template>
                 <template v-else>
                   <UIcon name="i-lucide-check" class="size-4" />
                   Place Order

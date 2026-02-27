@@ -1,8 +1,5 @@
 <script setup lang="ts">
-import PhotoSwipe from 'photoswipe';
-import 'photoswipe/style.css';
-import Plyr from 'plyr';
-import 'plyr/dist/plyr.css';
+import type PlyrType from 'plyr';
 
 interface MediaItem {
   url: string;
@@ -21,7 +18,7 @@ const props = withDefaults(defineProps<Props>(), {
 
 const activeIndex = ref(0);
 const videoPlayerRef = ref<HTMLVideoElement | null>(null);
-const plyrInstance = ref<Plyr | null>(null);
+const plyrInstance = ref<PlyrType | null>(null);
 
 const mediaItems = computed<MediaItem[]>(() => {
   const items = props.images.map((url) => {
@@ -77,7 +74,13 @@ async function getImageDimensions(src: string): Promise<{ w: number; h: number }
 }
 
 async function openLightbox() {
+  if (!import.meta.client) return;
   if (activeMedia.value.type === 'video') return;
+
+  const [{ default: PhotoSwipe }] = await Promise.all([
+    import('photoswipe'),
+    import('photoswipe/style.css'),
+  ]);
 
   const items = await Promise.all(
     imageItems.value.map(async (media) => {
@@ -99,8 +102,13 @@ async function openLightbox() {
   lightbox.init();
 }
 
-function initVideoPlayer(autoplay: boolean = false) {
+async function initVideoPlayer(autoplay: boolean = false) {
+  if (!import.meta.client) return;
+
   if (videoPlayerRef.value && !plyrInstance.value) {
+    const { default: Plyr } = await import('plyr');
+    await import('plyr/dist/plyr.css');
+
     plyrInstance.value = new Plyr(videoPlayerRef.value, {
       controls: ['play-large', 'play', 'progress', 'current-time', 'mute', 'volume', 'fullscreen'],
       resetOnEnd: true,

@@ -1,5 +1,4 @@
-import type { Product } from '~/features/products/types/product';
-import { getMockProducts } from '~/mocks';
+import type { ProductListItem } from '~/stores/types';
 import { debounce } from '~/features/shared/utils';
 
 const RECENT_SEARCHES_KEY = 'guh-store-recent-searches';
@@ -7,8 +6,11 @@ const MAX_RECENT_SEARCHES = 5;
 const MAX_SUGGESTIONS = 6;
 
 export function useProductSearch() {
+  const { shopSlug } = useShopInfo();
+  const { posFetch } = useShopApi();
+
   const searchQuery = ref('');
-  const suggestions = ref<Product[]>([]);
+  const suggestions = ref<ProductListItem[]>([]);
   const recentSearches = ref<string[]>([]);
   const isLoading = ref(false);
   const isOpen = ref(false);
@@ -54,25 +56,35 @@ export function useProductSearch() {
     }
   }
 
-  function searchProducts(query: string): Product[] {
-    if (!query.trim()) return [];
+  async function searchProducts(query: string): Promise<ProductListItem[]> {
+    if (!query.trim() || !shopSlug.value) return [];
 
-    const searchTerm = query.toLowerCase().trim();
-    const allProducts = getMockProducts();
+    try {
+      const response = await posFetch<{ data: ProductListItem[] }>(
+        '/api/third-party/v1/shops/analytic-hub',
+        {
+          method: 'POST',
+          body: {
+            wallet_shop_slug: shopSlug.value,
+            analytic_type: 'ListWalletShopProductSearchHandler',
+            search_value: {
+              search_product_name: query.trim(),
+            },
+          },
+        },
+      );
 
-    return allProducts
-      .filter((product) => {
-        const nameMatch = product.name.toLowerCase().includes(searchTerm);
-        const descMatch = product.short_description?.toLowerCase().includes(searchTerm);
-        return nameMatch || descMatch;
-      })
-      .slice(0, MAX_SUGGESTIONS);
+      return response.data.slice(0, MAX_SUGGESTIONS);
+    } catch (error) {
+      console.error('Search failed:', error);
+      return [];
+    }
   }
 
-  const debouncedSearch = debounce((query: string) => {
-    suggestions.value = searchProducts(query);
+  const debouncedSearch = debounce(async (query: string) => {
+    suggestions.value = await searchProducts(query);
     isLoading.value = false;
-  }, 200);
+  }, 300);
 
   function handleInput(query: string) {
     searchQuery.value = query;
@@ -101,7 +113,7 @@ export function useProductSearch() {
     suggestions.value = [];
   }
 
-  function selectSuggestion(product: Product) {
+  function selectSuggestion(product: ProductListItem) {
     saveRecentSearch(product.name);
     closeSearch();
     navigateTo(`/products/${product.slug}`);
@@ -112,7 +124,8 @@ export function useProductSearch() {
     if (!term.trim()) return;
     saveRecentSearch(term);
     closeSearch();
-    navigateTo(`/products?search=${encodeURIComponent(term.trim())}`);
+    // Navigate to home with search filter applied
+    navigateTo(`/?search=${encodeURIComponent(term.trim())}`);
   }
 
   function selectRecentSearch(query: string) {

@@ -1,21 +1,22 @@
 <script setup lang="ts">
-import type { Product } from '~/features/products/types/product';
-import { formatCurrency, type CurrencyCode } from '~/features/shared/utils';
+import type { Product, ProductListItem } from '~/features/products/types/product';
 
 interface Props {
-  product: Product;
+  product: Product | ProductListItem;
 }
 
 defineProps<Props>();
 
+const { formatPrice } = useCurrency();
+
 const emit = defineEmits<{
-  addToCart: [product: Product];
+  addToCart: [product: Product | ProductListItem];
 }>();
 
 const isAdded = ref(false);
 let addedTimeout: ReturnType<typeof setTimeout> | null = null;
 
-function handleAddToCart(product: Product) {
+function handleAddToCart(product: Product | ProductListItem) {
   emit('addToCart', product);
 
   if (addedTimeout) {
@@ -71,12 +72,12 @@ const placeholderImage = 'https://placehold.co/400x400/f3f6f8/7493b2?text=No+Ima
       </NuxtLink>
 
       <p class="text-xs font-semibold text-primary sm:text-sm">
-        {{ formatCurrency(product.price, product.currency as CurrencyCode) }}
+        {{ formatPrice(product.price) }}
       </p>
 
       <button
         type="button"
-        class="mt-auto inline-flex w-full cursor-pointer items-center justify-center gap-1 rounded-full bg-gray-700 px-3 py-1.5 pt-2 text-[10px] font-medium text-white transition-colors duration-200 hover:bg-gray-800 disabled:cursor-not-allowed disabled:opacity-50 sm:w-fit sm:gap-1.5 sm:px-4 sm:py-2 sm:text-xs"
+        class="mt-auto inline-flex w-full cursor-pointer items-center justify-center gap-1 rounded-full bg-gray-800 px-3 py-1.5 pt-2 text-[10px] font-medium text-white transition-colors duration-200 hover:bg-gray-800 disabled:cursor-not-allowed disabled:opacity-50 sm:w-fit sm:gap-1.5 sm:px-4 sm:py-2 sm:text-xs"
         :class="{ 'bg-gray-900': isAdded }"
         :disabled="product.is_sold"
         @click.prevent="handleAddToCart(product)"
