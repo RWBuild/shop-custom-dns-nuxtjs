@@ -10,7 +10,7 @@ export function useCategories() {
     error,
     refresh,
   } = useFetch<ApiResponse<Category[]>>('/api/categories', {
-    baseURL: config.public.apiBaseUrl as string,
+    baseURL: config.public.posBaseUrl as string,
     lazy: true,
   });
 

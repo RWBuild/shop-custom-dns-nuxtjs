@@ -12,7 +12,7 @@ export function useProducts(filters?: Ref<ProductFilters> | ProductFilters) {
     error,
     refresh,
   } = useFetch<ApiResponse<Product[]>>('/api/products', {
-    baseURL: config.public.apiBaseUrl as string,
+    baseURL: config.public.posBaseUrl as string,
     query: reactiveFilters,
     lazy: true,
     watch: [reactiveFilters],
@@ -42,7 +42,7 @@ export function useProductsByCategory(categoryId: Ref<number | null>) {
     error,
     refresh,
   } = useFetch<ApiResponse<Product[]>>('/api/products', {
-    baseURL: config.public.apiBaseUrl as string,
+    baseURL: config.public.posBaseUrl as string,
     query: computed(() => ({
       category_id: categoryId.value,
     })),
