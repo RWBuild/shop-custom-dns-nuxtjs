@@ -1,39 +1,38 @@
 import {
-  formatCurrency as formatCurrencyUtil,
-  parseCurrency as parseCurrencyUtil,
   addCurrency as addCurrencyUtil,
-  subtractCurrency as subtractCurrencyUtil,
-  multiplyCurrency as multiplyCurrencyUtil,
   divideCurrency as divideCurrencyUtil,
-  type CurrencyCode,
+  formatCurrency as formatCurrencyUtil,
+  multiplyCurrency as multiplyCurrencyUtil,
+  parseCurrency as parseCurrencyUtil,
+  subtractCurrency as subtractCurrencyUtil,
 } from '~/features/shared/utils';
 
 export function useCurrency() {
   const { shopCurrency } = useShopInfo();
 
-  const currencyCode = computed(() => (shopCurrency.value as CurrencyCode) || 'RWF');
+  const currencyCode = computed(() => shopCurrency.value || 'RWF');
 
-  const formatPrice = (value: number, code?: CurrencyCode): string => {
+  const formatPrice = (value: number, code?: string): string => {
     return formatCurrencyUtil(value, code || currencyCode.value);
   };
 
-  const parsePrice = (value: string, code?: CurrencyCode): number => {
+  const parsePrice = (value: string, code?: string): number => {
     return parseCurrencyUtil(value, code || currencyCode.value);
   };
 
-  const addPrice = (a: number, b: number, code?: CurrencyCode): number => {
+  const addPrice = (a: number, b: number, code?: string): number => {
     return addCurrencyUtil(a, b, code || currencyCode.value);
   };
 
-  const subtractPrice = (a: number, b: number, code?: CurrencyCode): number => {
+  const subtractPrice = (a: number, b: number, code?: string): number => {
     return subtractCurrencyUtil(a, b, code || currencyCode.value);
   };
 
-  const multiplyPrice = (value: number, multiplier: number, code?: CurrencyCode): number => {
+  const multiplyPrice = (value: number, multiplier: number, code?: string): number => {
     return multiplyCurrencyUtil(value, multiplier, code || currencyCode.value);
   };
 
-  const dividePrice = (value: number, divisor: number, code?: CurrencyCode): number => {
+  const dividePrice = (value: number, divisor: number, code?: string): number => {
     return divideCurrencyUtil(value, divisor, code || currencyCode.value);
   };
 
