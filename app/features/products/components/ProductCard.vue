@@ -108,7 +108,7 @@ onUnmounted(() => {
         <button
           v-if="showScheduleFitting"
           type="button"
-          class="inline-flex w-full cursor-pointer items-center justify-center gap-1 rounded-full border border-none bg-gray-900 px-2.5 py-1.5 text-[10px] font-medium text-gray-700 transition-colors duration-200 hover:bg-gray-600 disabled:cursor-not-allowed disabled:opacity-50 sm:w-auto sm:px-3 sm:py-1.5"
+          class="inline-flex w-full cursor-pointer items-center justify-center gap-1 rounded-full border border-none bg-gray-900 px-2.5 py-1.5 text-[10px] font-medium text-white not-only:transition-colors duration-200 hover:bg-gray-600 disabled:cursor-not-allowed disabled:opacity-50 sm:w-auto sm:px-3 sm:py-1.5"
           :disabled="product.is_sold"
           @click.prevent="handleScheduleFitting"
         >
