@@ -137,7 +137,7 @@ function closeSuccessDialog() {
     v-model:open="isOpen"
     side="right"
     :ui="{
-      content: 'w-full max-w-md h-[100dvh] min-h-screen z-50',
+      content: 'w-full max-w-md h-[100dvh] max-h-[100dvh] z-50 overflow-hidden',
     }"
   >
     <template #content>
@@ -214,7 +214,7 @@ function closeSuccessDialog() {
             </div>
 
             <template v-else>
-              <div class="flex-1 overflow-y-auto px-4 py-4 sm:px-6">
+              <div class="flex-1 overflow-y-auto overscroll-contain px-4 py-4 sm:px-6">
                 <div class="space-y-4">
                   <CartItem
                     v-for="item in items"
@@ -252,7 +252,7 @@ function closeSuccessDialog() {
           </div>
 
           <div v-else key="checkout" class="flex flex-1 flex-col overflow-hidden">
-            <div class="flex-1 overflow-y-auto px-4 py-4 sm:px-6">
+            <div class="flex-1 overflow-y-auto overscroll-contain px-4 py-4 pb-6 sm:px-6">
               <form class="space-y-4" @submit.prevent="handlePlaceOrder">
                 <div class="grid grid-cols-2 gap-3">
                   <div>

@@ -85,9 +85,7 @@ onMounted(() => {
           <span
             class="absolute bottom-0 left-0 right-0 h-0.75 origin-center rounded-full transition-all duration-300 ease-out"
             :class="[
-              activeTab === tab.slug
-                ? 'scale-x-100 bg-primary'
-                : 'scale-x-0 bg-transparent',
+              activeTab === tab.slug ? 'scale-x-100 bg-primary' : 'scale-x-0 bg-transparent',
             ]"
           />
         </button>
@@ -123,9 +121,7 @@ onMounted(() => {
                 <span
                   class="absolute bottom-0 left-0 right-0 h-[3px] origin-center rounded-full transition-all duration-300 ease-out"
                   :class="[
-                    activeTab === tab.slug
-                      ? 'scale-x-100 bg-primary'
-                      : 'scale-x-0 bg-transparent',
+                    activeTab === tab.slug ? 'scale-x-100 bg-primary' : 'scale-x-0 bg-transparent',
                   ]"
                 />
               </button>
@@ -143,7 +139,7 @@ onMounted(() => {
       @add-to-cart="handleAddToCart"
     />
     <div v-else class="py-10 text-center sm:py-12">
-      <p class="text-[11px] text-gray-400 sm:text-xs">No products in this category yet.</p>
+      <p class="text-[11px] text-gray-500 sm:text-xs">No products in this category yet.</p>
     </div>
   </section>
 </template>
