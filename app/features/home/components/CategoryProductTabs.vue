@@ -23,6 +23,8 @@ const emit = defineEmits<{
   tabChange: [categoryId: number | null];
 }>();
 
+const { trackCategoryView } = useAnalytics();
+
 const activeTab = ref('all');
 const tabsRef = ref<HTMLElement | null>(null);
 const isTabsHidden = ref(false);
@@ -40,9 +42,12 @@ function handleAddToCart(product: ProductType) {
   emit('addToCart', product);
 }
 
-function setActiveTab(slug: string, categoryId: number | null) {
+function setActiveTab(slug: string, categoryId: number | null, label: string) {
   activeTab.value = slug;
   emit('tabChange', categoryId);
+  if (categoryId !== null) {
+    trackCategoryView({ name: label, id: categoryId });
+  }
 }
 
 onMounted(() => {
@@ -79,7 +84,7 @@ onMounted(() => {
           type="button"
           class="relative shrink-0 cursor-pointer px-3 py-1.5 text-[12px] font-medium transition-colors duration-200 sm:px-4 sm:py-2 sm:text-xs"
           :class="[activeTab === tab.slug ? 'text-primary' : 'text-gray-500 hover:text-gray-700']"
-          @click="setActiveTab(tab.slug, tab.id)"
+          @click="setActiveTab(tab.slug, tab.id, tab.label)"
         >
           {{ tab.label }}
           <span
@@ -115,7 +120,7 @@ onMounted(() => {
                 :class="[
                   activeTab === tab.slug ? 'text-primary' : 'text-gray-500 hover:text-gray-700',
                 ]"
-                @click="setActiveTab(tab.slug, tab.id)"
+                @click="setActiveTab(tab.slug, tab.id, tab.label)"
               >
                 {{ tab.label }}
                 <span
