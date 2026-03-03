@@ -66,7 +66,18 @@ const productImages = computed(() => {
 
 const quantity = ref(1);
 const isAdded = ref(false);
+const isFittingDialogOpen = ref(false);
 let addedTimeout: ReturnType<typeof setTimeout> | null = null;
+
+const showAddToCart = computed(() => {
+  const option = product.value?.purchase_option;
+  return !option || option === 'both' || option === 'purchase_only';
+});
+
+const showScheduleFitting = computed(() => {
+  const option = product.value?.purchase_option;
+  return option === 'both' || option === 'fitting_only';
+});
 
 function handleAddToCart() {
   if (!product.value) return;
@@ -89,6 +100,10 @@ function handleAddToCart() {
   addedTimeout = setTimeout(() => {
     isAdded.value = false;
   }, 2000);
+}
+
+function handleScheduleFitting() {
+  isFittingDialogOpen.value = true;
 }
 
 onUnmounted(() => {
@@ -173,6 +188,7 @@ useSeoMeta({
             </div>
 
             <button
+              v-if="showAddToCart"
               type="button"
               class="inline-flex w-fit cursor-pointer items-center justify-center gap-1.5 rounded-full bg-primary px-5 py-2 text-xs font-medium text-white transition-colors hover:bg-primary/75 disabled:cursor-not-allowed disabled:opacity-50"
               :class="{ 'bg-primary/85': isAdded }"
@@ -181,6 +197,17 @@ useSeoMeta({
             >
               <UIcon name="i-heroicons-shopping-cart" class="size-4" />
               <span>{{ isAdded ? 'Added to Cart' : 'Add to Cart' }}</span>
+            </button>
+
+            <button
+              v-if="showScheduleFitting"
+              type="button"
+              class="inline-flex w-fit cursor-pointer items-center justify-center gap-1.5 rounded-full bg-gray-900 px-5 py-2 text-xs font-medium text-white transition-colors hover:bg-gray-700 disabled:cursor-not-allowed disabled:opacity-50"
+              :disabled="product.is_sold"
+              @click="handleScheduleFitting"
+            >
+              <UIcon name="i-lucide-calendar" class="size-4" />
+              <span>Schedule Fitting</span>
             </button>
           </div>
 
@@ -228,5 +255,12 @@ useSeoMeta({
         <span>Back to Home</span>
       </NuxtLink>
     </UContainer>
+
+    <ScheduleFittingDialog
+      v-if="product"
+      v-model:open="isFittingDialogOpen"
+      :product-id="product.id"
+      :product-name="product.name"
+    />
   </div>
 </template>
