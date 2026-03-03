@@ -10,14 +10,16 @@ interface Props {
   autofocus?: boolean;
   maxlength?: number;
   rows?: number;
+  highlight?: boolean;
 }
 
-withDefaults(defineProps<Props>(), {
+const props = withDefaults(defineProps<Props>(), {
   placeholder: '',
   disabled: false,
   readonly: false,
   required: false,
   rows: 4,
+  highlight: false,
 });
 
 const emit = defineEmits<{
@@ -46,7 +48,10 @@ function handleInput(event: Event) {
     class="w-full"
     :ui="{
       root: 'w-full',
-      base: 'w-full px-4 py-2.5 bg-gray-brand-4 rounded-lg text-sm text-gray-brand-neutral-2 placeholder:text-gray-brand-2 focus:ring-2 focus:ring-primary/20 border-0 outline-none resize-none',
+      base: [
+        'w-full px-4 py-2.5 bg-gray-brand-4 rounded-lg text-sm text-gray-brand-neutral-2 placeholder:text-gray-brand-2 focus:ring-2 focus:ring-primary/20 outline-none resize-none',
+        props.highlight ? 'ring-2 ring-red-500/50 border-red-500' : 'border-0',
+      ],
     }"
     @input="handleInput"
   />
