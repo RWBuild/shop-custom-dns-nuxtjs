@@ -116,7 +116,7 @@ watch(isOpen, (open) => {
 <template>
   <UModal
     v-model:open="isOpen"
-    :ui="{ content: 'sm:max-w-lg max-h-[85dvh] overflow-hidden flex flex-col z-30' }"
+    :ui="{ content: 'sm:max-w-lg max-h-[85dvh] overflow-hidden flex flex-col', overlay: 'z-50' }"
   >
     <template #content>
       <div class="flex flex-1 flex-col overflow-y-auto overscroll-contain p-6">
@@ -234,20 +234,20 @@ watch(isOpen, (open) => {
           <div class="flex gap-3 pt-2">
             <button
               type="button"
-              class="flex-1 cursor-pointer rounded-full border border-gray-300 px-4 py-2.5 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-50"
+              class="flex-1 cursor-pointer rounded-full border border-gray-300 px-3 py-2 text-xs font-medium text-gray-700 transition-colors hover:bg-gray-50"
               @click="handleClose"
             >
               Cancel
             </button>
             <button
               type="submit"
-              class="flex flex-1 cursor-pointer items-center justify-center gap-2 rounded-full bg-primary px-4 py-2.5 text-sm font-medium text-white transition-colors hover:bg-primary/90 disabled:cursor-not-allowed disabled:opacity-50"
+              class="flex flex-1 cursor-pointer items-center justify-center gap-2 rounded-full bg-primary px-3 py-2 text-xs font-medium text-white transition-colors hover:bg-primary/90 disabled:cursor-not-allowed disabled:opacity-50"
               :disabled="productsStore.isSchedulingFitting"
             >
               <UIcon
                 v-if="productsStore.isSchedulingFitting"
                 name="i-lucide-loader-2"
-                class="size-4 animate-spin"
+                class="size-3.5 animate-spin"
               />
               <span>
                 {{ productsStore.isSchedulingFitting ? 'Submitting...' : 'Submit Request' }}
