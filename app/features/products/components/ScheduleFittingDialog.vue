@@ -116,7 +116,7 @@ watch(isOpen, (open) => {
 <template>
   <UModal
     v-model:open="isOpen"
-    :ui="{ content: 'sm:max-w-lg max-h-[85dvh] overflow-hidden flex flex-col', overlay: 'z-50' }"
+    :ui="{ content: 'sm:max-w-lg max-h-[85dvh] overflow-hidden flex flex-col z-[51]', overlay: 'z-50' }"
   >
     <template #content>
       <div class="flex flex-1 flex-col overflow-y-auto overscroll-contain p-6">
