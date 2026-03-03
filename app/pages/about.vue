@@ -29,9 +29,6 @@ onMounted(() => {
             v-html="sanitizedAboutContent"
           />
           <!-- eslint-enable vue/no-v-html -->
-          <p v-else class="text-sm text-gray-500">
-            Welcome to our store. We're committed to providing you with the best products and service.
-          </p>
         </div>
       </div>
     </UContainer>

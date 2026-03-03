@@ -149,8 +149,9 @@ function closeSuccessDialog() {
             <button
               v-if="currentView === 'checkout'"
               type="button"
-              class="flex size-8 cursor-pointer items-center justify-center rounded-full text-gray-500 transition-colors hover:bg-gray-100 hover:text-gray-700"
+              class="flex size-8 cursor-pointer items-center justify-center rounded-full text-gray-500 transition-colors hover:bg-gray-100 hover:text-gray-700 disabled:cursor-not-allowed disabled:opacity-50"
               aria-label="Back to cart"
+              :disabled="isSubmitting"
               @click="handleBack"
             >
               <UIcon name="i-lucide-arrow-left" class="size-5" />
@@ -175,8 +176,9 @@ function closeSuccessDialog() {
             </button>
             <button
               type="button"
-              class="flex size-8 cursor-pointer items-center justify-center rounded-full text-gray-500 transition-colors hover:bg-gray-100 hover:text-gray-700"
+              class="flex size-8 cursor-pointer items-center justify-center rounded-full text-gray-500 transition-colors hover:bg-gray-100 hover:text-gray-700 disabled:cursor-not-allowed disabled:opacity-50"
               aria-label="Close cart"
+              :disabled="isSubmitting"
               @click="closeDrawer"
             >
               <UIcon name="i-lucide-x" class="size-5" />
@@ -266,6 +268,7 @@ function closeSuccessDialog() {
                       id="firstName"
                       v-model="checkoutForm.firstName"
                       placeholder="John"
+                      :disabled="isSubmitting"
                       :highlight="v$.firstName.$error"
                       :color="v$.firstName.$error ? 'error' : undefined"
                       @blur="v$.firstName.$touch()"
@@ -283,6 +286,7 @@ function closeSuccessDialog() {
                       id="lastName"
                       v-model="checkoutForm.lastName"
                       placeholder="Doe"
+                      :disabled="isSubmitting"
                       :highlight="v$.lastName.$error"
                       :color="v$.lastName.$error ? 'error' : undefined"
                       @blur="v$.lastName.$touch()"
@@ -303,6 +307,7 @@ function closeSuccessDialog() {
                     v-model="checkoutForm.email"
                     type="email"
                     placeholder="john@example.com"
+                    :disabled="isSubmitting"
                     :highlight="v$.email.$error"
                     :color="v$.email.$error ? 'error' : undefined"
                     @blur="v$.email.$touch()"
@@ -320,6 +325,7 @@ function closeSuccessDialog() {
                   <AppPhoneNumberInput
                     id="phone"
                     v-model="checkoutForm.phone"
+                    :disabled="isSubmitting"
                     :highlight="v$.phone.$error"
                     @blur="v$.phone.$touch()"
                     @valid="handlePhoneValidation"
@@ -338,6 +344,7 @@ function closeSuccessDialog() {
                     id="address"
                     v-model="checkoutForm.address"
                     placeholder="123 Main St, Kigali"
+                    :disabled="isSubmitting"
                     :highlight="v$.address.$error"
                     :color="v$.address.$error ? 'error' : undefined"
                     @blur="v$.address.$touch()"
@@ -356,6 +363,7 @@ function closeSuccessDialog() {
                     id="description"
                     v-model="checkoutForm.description"
                     placeholder="Any special instructions for delivery..."
+                    :disabled="isSubmitting"
                     :rows="3"
                   />
                 </div>

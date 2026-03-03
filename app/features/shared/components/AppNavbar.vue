@@ -169,11 +169,11 @@ onUnmounted(() => {
 
           <button
             type="button"
-            class="flex items-center gap-1.5 pl-2.5 pr-1.5 py-1.5 bg-gray-100 hover:bg-gray-200 rounded-full transition-colors cursor-pointer"
+            class="flex items-center gap-1.5 px-2.5 py-2 bg-gray-100 hover:bg-gray-200 rounded-full transition-colors cursor-pointer"
             aria-label="Cart"
             @click="openCartDrawer"
           >
-            <UIcon name="i-lucide-shopping-cart" class="w-4 h-4 text-gray-700" />
+            <UIcon name="i-lucide-shopping-cart" class="size-4 text-gray-700" />
             <span
               class="flex items-center justify-center min-w-5 h-5 px-1.5 text-[10px] font-semibold text-white bg-primary rounded-full transition-transform"
               :class="isCartAnimating ? 'cart-badge-bounce' : ''"
