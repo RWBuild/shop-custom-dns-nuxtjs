@@ -3,11 +3,9 @@ interface Props {
   image?: string;
   imageAlt?: string;
   link?: string;
-  /** Image focal point: 'top' | 'center' | 'bottom' - where to focus when cropping */
+  
   focalPoint?: 'top' | 'center' | 'bottom';
-  /** Height preset: 'sm' | 'md' | 'lg' | 'xl' */
   height?: 'sm' | 'md' | 'lg' | 'xl';
-  /** Show gradient overlay for better text readability */
   overlay?: boolean;
 }
 
@@ -28,9 +26,9 @@ const bannerAlt = computed(() => props.imageAlt || `${shopName.value} banner`);
 
 const heightClasses = {
   sm: 'h-32 sm:h-40 md:h-48 lg:h-56',
-  md: 'h-40 sm:h-48 md:h-56 lg:h-72',
-  lg: 'h-48 sm:h-56 md:h-72 lg:h-80',
-  xl: 'h-56 sm:h-72 md:h-80 lg:h-96',
+  md: 'h-40 sm:h-48 md:h-56 lg:h-[468px]',
+  lg: 'h-48 sm:h-56 md:h-72 lg:h-[468px]',
+  xl: 'h-56 sm:h-72 md:h-80 lg:h-[468px]',
 };
 
 const focalPointClasses = {

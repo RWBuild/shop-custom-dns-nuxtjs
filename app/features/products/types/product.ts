@@ -34,6 +34,7 @@ export interface ProductListItem {
   currency: string;
   image: string | null;
   is_sold: boolean;
+  purchase_option?: string | null;
   product_type_id?: number;
 }
 

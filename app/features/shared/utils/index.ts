@@ -109,3 +109,18 @@ export function truncate(text: string, maxLength: number): string {
   if (text.length <= maxLength) return text;
   return `${text.substring(0, maxLength).trim()}...`;
 }
+
+export function parseLaravelError(err: unknown, fallbackMessage: string): string {
+  if (err && typeof err === 'object' && 'data' in err) {
+    const data = (err as { data: { message?: string } }).data;
+    if (data?.message) {
+      return data.message;
+    }
+  }
+
+  if (err instanceof Error) {
+    return err.message;
+  }
+
+  return fallbackMessage;
+}

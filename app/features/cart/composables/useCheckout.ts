@@ -1,4 +1,5 @@
 import type { CartItem } from '../types/cart.types';
+import { parseLaravelError } from '~/features/shared/utils';
 
 export interface CheckoutCustomer {
   name: string;
@@ -64,7 +65,7 @@ export function useCheckout() {
       checkoutResponse.value = response;
       return response;
     } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : 'Failed to create invoice';
+      const errorMessage = parseLaravelError(err, 'Failed to create invoice');
       error.value = errorMessage;
       throw new Error(errorMessage);
     } finally {

@@ -1,15 +1,27 @@
 import { defineStore } from 'pinia';
 import type { Product, ProductListItem, ProductsResponse, PaginationMeta } from './types';
+import { parseLaravelError } from '~/features/shared/utils';
+
+export interface ScheduleFittingPayload {
+  customer_name: string;
+  email: string;
+  phone: string;
+  address: string;
+  description: string;
+  product_id: number;
+}
 
 export const useProductsStore = defineStore('products', () => {
   const { shopSlug, guhembaWalletId } = useShopInfo();
-  const { posFetch } = useShopApi();
+  const { posFetch, shopFetch } = useShopApi();
 
   const products = ref<ProductListItem[]>([]);
   const currentProduct = ref<Product | null>(null);
   const isLoading = ref(false);
   const isLoadingProduct = ref(false);
+  const isSchedulingFitting = ref(false);
   const error = ref<string | null>(null);
+  const fittingError = ref<string | null>(null);
   const meta = ref<PaginationMeta | null>(null);
   const searchQuery = ref('');
   const selectedCategoryId = ref<number | null>(null);
@@ -137,12 +149,37 @@ export const useProductsStore = defineStore('products', () => {
     return products.value.find((p) => p.slug === slug);
   }
 
+  async function scheduleFitting(payload: ScheduleFittingPayload): Promise<void> {
+    isSchedulingFitting.value = true;
+    fittingError.value = null;
+
+    try {
+      await shopFetch('/api/shops/fitting-schedule', {
+        method: 'POST',
+        body: payload,
+      });
+    } catch (err) {
+      const errorMessage = parseLaravelError(err, 'Failed to schedule fitting');
+      fittingError.value = errorMessage;
+      throw new Error(errorMessage);
+    } finally {
+      isSchedulingFitting.value = false;
+    }
+  }
+
+  function resetFittingState(): void {
+    isSchedulingFitting.value = false;
+    fittingError.value = null;
+  }
+
   return {
     products,
     currentProduct,
     isLoading,
     isLoadingProduct,
+    isSchedulingFitting,
     error,
+    fittingError,
     meta,
     searchQuery,
     selectedCategoryId,
@@ -160,5 +197,7 @@ export const useProductsStore = defineStore('products', () => {
     clearCurrentProduct,
     getProductById,
     getProductBySlug,
+    scheduleFitting,
+    resetFittingState,
   };
 });

@@ -24,7 +24,7 @@
     "@vuelidate/core": "^2.0.3",
     "@vuelidate/validators": "^2.0.4",
     "currency.js": "^2.0.4",
-    "isomorphic-dompurify": "^2.36.0",
+    "dompurify": "^3.2.4",
     "libphonenumber-js": "^1.12.38",
     "nuxt": "^4.3.1",
     "photoswipe": "^5.4.4",
