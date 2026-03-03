@@ -28,7 +28,10 @@ function handlePhoneValidation(valid: boolean) {
   isPhoneValid.value = valid;
 }
 
-const validPhone = helpers.withMessage('Please enter a valid phone number', () => isPhoneValid.value);
+const validPhone = helpers.withMessage(
+  'Please enter a valid phone number',
+  () => isPhoneValid.value
+);
 
 const rules = computed(() => ({
   fullName: {
@@ -111,7 +114,10 @@ watch(isOpen, (open) => {
 </script>
 
 <template>
-  <UModal v-model:open="isOpen" :ui="{ content: 'sm:max-w-lg max-h-[85dvh] overflow-hidden flex flex-col' }">
+  <UModal
+    v-model:open="isOpen"
+    :ui="{ content: 'sm:max-w-lg max-h-[85dvh] overflow-hidden flex flex-col z-30' }"
+  >
     <template #content>
       <div class="flex flex-1 flex-col overflow-y-auto overscroll-contain p-6">
         <div class="mb-6">
@@ -243,7 +249,9 @@ watch(isOpen, (open) => {
                 name="i-lucide-loader-2"
                 class="size-4 animate-spin"
               />
-              <span>{{ productsStore.isSchedulingFitting ? 'Submitting...' : 'Submit Request' }}</span>
+              <span>
+                {{ productsStore.isSchedulingFitting ? 'Submitting...' : 'Submit Request' }}
+              </span>
             </button>
           </div>
         </form>
