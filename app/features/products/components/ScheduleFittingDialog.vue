@@ -45,6 +45,9 @@ const rules = computed(() => ({
   address: {
     required: helpers.withMessage('Address is required', required),
   },
+  description: {
+    required: helpers.withMessage('Description is required', required),
+  },
 }));
 
 const v$ = useVuelidate(rules, form);
@@ -108,9 +111,9 @@ watch(isOpen, (open) => {
 </script>
 
 <template>
-  <UModal v-model:open="isOpen" :ui="{ content: 'sm:max-w-lg' }">
+  <UModal v-model:open="isOpen" :ui="{ content: 'sm:max-w-lg max-h-[85dvh] overflow-hidden flex flex-col' }">
     <template #content>
-      <div class="p-6">
+      <div class="flex flex-1 flex-col overflow-y-auto overscroll-contain p-6">
         <div class="mb-6">
           <div class="flex items-center justify-between">
             <h2 class="text-lg font-semibold text-gray-900">Schedule Fitting</h2>
@@ -206,15 +209,20 @@ watch(isOpen, (open) => {
 
           <div>
             <label for="fittingDescription" class="mb-1.5 block text-sm font-medium text-gray-700">
-              Additional Notes
-              <span class="text-gray-400">(Optional)</span>
+              Description
+              <span class="text-red-500">*</span>
             </label>
             <AppTextArea
               id="fittingDescription"
               v-model="form.description"
               placeholder="Any special requests or preferences..."
               :rows="3"
+              :highlight="v$.description.$error"
+              @blur="v$.description.$touch()"
             />
+            <p v-if="v$.description.$error" class="mt-1 text-xs text-red-500">
+              {{ v$.description.$errors[0]?.$message }}
+            </p>
           </div>
 
           <div class="flex gap-3 pt-2">
