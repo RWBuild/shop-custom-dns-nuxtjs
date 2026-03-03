@@ -1,23 +1,26 @@
 <script setup lang="ts">
-import type { Product, ProductListItem } from '~/features/products/types/product';
 import type { Category } from '~/features/products/types/category';
+import type { Product, ProductListItem } from '~/features/products/types/product';
 
 type ProductType = Product | ProductListItem;
 
-export interface CategoryWithProducts extends Category {
+export interface CategoryTab extends Category {
   slug: string;
-  products: ProductType[];
 }
 
 interface Props {
-  categories: CategoryWithProducts[];
-  allProducts: ProductType[];
+  categories: CategoryTab[];
+  products: ProductType[];
+  isLoading?: boolean;
 }
 
-const props = defineProps<Props>();
+const props = withDefaults(defineProps<Props>(), {
+  isLoading: false,
+});
 
 const emit = defineEmits<{
   addToCart: [product: ProductType];
+  tabChange: [categoryId: number | null];
 }>();
 
 const activeTab = ref('all');
@@ -25,27 +28,21 @@ const tabsRef = ref<HTMLElement | null>(null);
 const isTabsHidden = ref(false);
 
 const tabs = computed(() => [
-  { label: 'All', slug: 'all' },
+  { id: null, label: 'All', slug: 'all' },
   ...props.categories.map((cat) => ({
+    id: cat.id,
     label: cat.name,
     slug: cat.slug,
   })),
 ]);
 
-const activeProducts = computed(() => {
-  if (activeTab.value === 'all') {
-    return props.allProducts;
-  }
-  const category = props.categories.find((cat) => cat.slug === activeTab.value);
-  return category?.products ?? [];
-});
-
 function handleAddToCart(product: ProductType) {
   emit('addToCart', product);
 }
 
-function setActiveTab(slug: string) {
+function setActiveTab(slug: string, categoryId: number | null) {
   activeTab.value = slug;
+  emit('tabChange', categoryId);
 }
 
 onMounted(() => {
@@ -74,19 +71,15 @@ onMounted(() => {
 
 <template>
   <section>
-    <div ref="tabsRef" class="mb-4 border-b border-gray-200 sm:mb-6">
-      <nav class="-mb-px flex overflow-x-auto scrollbar-hide">
+    <div ref="tabsRef" class="mb-4 border-b border-gray-200 sm:mb-5">
+      <nav class="-mb-px flex gap-1 overflow-x-auto scrollbar-hide sm:gap-2">
         <button
           v-for="tab in tabs"
           :key="tab.slug"
           type="button"
-          class="relative shrink-0 cursor-pointer px-3 py-2 text-xs font-medium transition-colors duration-200 sm:px-4 sm:py-2.5 sm:text-sm"
-          :class="[
-            activeTab === tab.slug
-              ? 'text-primary'
-              : 'text-gray-500 hover:text-gray-700',
-          ]"
-          @click="setActiveTab(tab.slug)"
+          class="relative shrink-0 cursor-pointer px-3 py-1.5 text-[12px] font-medium transition-colors duration-200 sm:px-4 sm:py-2 sm:text-xs"
+          :class="[activeTab === tab.slug ? 'text-primary' : 'text-gray-500 hover:text-gray-700']"
+          @click="setActiveTab(tab.slug, tab.id)"
         >
           {{ tab.label }}
           <span
@@ -111,18 +104,16 @@ onMounted(() => {
           class="fixed left-0 right-0 top-14 z-40 border-b border-gray-200 bg-white/95 backdrop-blur-sm sm:top-16"
         >
           <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-            <nav class="-mb-px flex overflow-x-auto scrollbar-hide">
+            <nav class="-mb-px flex gap-1 overflow-x-auto scrollbar-hide sm:gap-2">
               <button
                 v-for="tab in tabs"
                 :key="`fixed-${tab.slug}`"
                 type="button"
-                class="relative shrink-0 cursor-pointer px-3 py-2 text-xs font-medium transition-colors duration-200 sm:px-4 sm:py-2.5 sm:text-sm"
+                class="relative shrink-0 cursor-pointer px-3 py-1.5 text-[11px] font-medium transition-colors duration-200 sm:px-4 sm:py-2 sm:text-xs"
                 :class="[
-                  activeTab === tab.slug
-                    ? 'text-primary'
-                    : 'text-gray-500 hover:text-gray-700',
+                  activeTab === tab.slug ? 'text-primary' : 'text-gray-500 hover:text-gray-700',
                 ]"
-                @click="setActiveTab(tab.slug)"
+                @click="setActiveTab(tab.slug, tab.id)"
               >
                 {{ tab.label }}
                 <span
@@ -136,14 +127,15 @@ onMounted(() => {
       </Transition>
     </Teleport>
 
+    <ProductGridSkeleton v-if="isLoading" :count="8" :columns="4" />
     <ProductGrid
-      v-if="activeProducts.length > 0"
-      :products="activeProducts"
+      v-else-if="products.length > 0"
+      :products="products"
       :columns="4"
       @add-to-cart="handleAddToCart"
     />
-    <div v-else class="py-12 text-center sm:py-16">
-      <p class="text-xs text-gray-400 sm:text-sm">No products in this category yet.</p>
+    <div v-else class="py-10 text-center sm:py-12">
+      <p class="text-[11px] text-gray-400 sm:text-xs">No products in this category yet.</p>
     </div>
   </section>
 </template>
