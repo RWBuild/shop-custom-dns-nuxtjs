@@ -83,8 +83,12 @@ onMounted(() => {
         >
           {{ tab.label }}
           <span
-            class="absolute bottom-0 left-0 right-0 h-0.5 transition-all duration-300 ease-out"
-            :class="[activeTab === tab.slug ? 'bg-primary' : 'bg-transparent']"
+            class="absolute bottom-0 left-0 right-0 h-0.75 origin-center rounded-full transition-all duration-300 ease-out"
+            :class="[
+              activeTab === tab.slug
+                ? 'scale-x-100 bg-primary'
+                : 'scale-x-0 bg-transparent',
+            ]"
           />
         </button>
       </nav>
@@ -117,8 +121,12 @@ onMounted(() => {
               >
                 {{ tab.label }}
                 <span
-                  class="absolute bottom-0 left-0 right-0 h-0.5 transition-all duration-300 ease-out"
-                  :class="[activeTab === tab.slug ? 'bg-primary' : 'bg-transparent']"
+                  class="absolute bottom-0 left-0 right-0 h-[3px] origin-center rounded-full transition-all duration-300 ease-out"
+                  :class="[
+                    activeTab === tab.slug
+                      ? 'scale-x-100 bg-primary'
+                      : 'scale-x-0 bg-transparent',
+                  ]"
                 />
               </button>
             </nav>
