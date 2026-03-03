@@ -1,8 +1,7 @@
-import type { ProductListItem } from '~/stores/types';
 import { debounce } from '~/features/shared/utils';
+import type { ProductListItem } from '~/stores/types';
 
 const RECENT_SEARCHES_KEY = 'guh-store-recent-searches';
-const MAX_RECENT_SEARCHES = 5;
 const MAX_SUGGESTIONS = 6;
 
 export function useProductSearch() {
@@ -25,20 +24,6 @@ export function useProductSearch() {
       } catch {
         recentSearches.value = [];
       }
-    }
-  }
-
-  function saveRecentSearch(query: string) {
-    if (!query.trim()) return;
-
-    const trimmed = query.trim().toLowerCase();
-    recentSearches.value = [
-      trimmed,
-      ...recentSearches.value.filter((s) => s !== trimmed),
-    ].slice(0, MAX_RECENT_SEARCHES);
-
-    if (import.meta.client) {
-      localStorage.setItem(RECENT_SEARCHES_KEY, JSON.stringify(recentSearches.value));
     }
   }
 
@@ -71,7 +56,7 @@ export function useProductSearch() {
               search_product_name: query.trim(),
             },
           },
-        },
+        }
       );
 
       return response.data.slice(0, MAX_SUGGESTIONS);
@@ -113,19 +98,16 @@ export function useProductSearch() {
     suggestions.value = [];
   }
 
-  function selectSuggestion(product: ProductListItem) {
-    saveRecentSearch(product.name);
+  async function selectSuggestion(product: ProductListItem) {
     closeSearch();
-    navigateTo(`/products/${product.slug}`);
+    await navigateTo(`/products/${product.slug}`);
   }
 
-  function submitSearch(query?: string) {
+  async function submitSearch(query?: string) {
     const term = query || searchQuery.value;
     if (!term.trim()) return;
-    saveRecentSearch(term);
     closeSearch();
-    // Navigate to home with search filter applied
-    navigateTo(`/?search=${encodeURIComponent(term.trim())}`);
+    await navigateTo(`/?search=${encodeURIComponent(term.trim())}`);
   }
 
   function selectRecentSearch(query: string) {
