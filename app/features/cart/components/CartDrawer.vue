@@ -7,6 +7,7 @@ const { isOpen, currentView, closeDrawer, goToCheckout, goToCart } = useCartDraw
 const { items, isEmpty, cartSummary, incrementQuantity, decrementQuantity, removeItem, clearCart } =
   useCart();
 const { createInvoice, isSubmitting, reset: resetCheckout } = useCheckout();
+const { trackCheckout } = useAnalytics();
 const toast = useToast();
 
 const cartCurrency = computed(() => 'RWF');
@@ -89,6 +90,7 @@ async function handlePlaceOrder() {
       checkoutForm.value.description
     );
 
+    trackCheckout();
     clearCart();
     checkoutForm.value = {
       firstName: '',
