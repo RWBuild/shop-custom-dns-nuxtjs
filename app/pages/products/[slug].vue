@@ -7,6 +7,7 @@ const { addItem } = useCart();
 const { notifyItemAdded } = useCartNotification();
 const { formatPrice } = useCurrency();
 const { sanitizeHtml } = useSanitize();
+const { trackProductView, trackAddToCart } = useAnalytics();
 
 const productsStore = useProductsStore();
 
@@ -17,6 +18,12 @@ const { data: product, status } = await useAsyncData(
 );
 
 const isLoading = computed(() => status.value === 'pending' || status.value === 'idle');
+
+watch(product, (p) => {
+  if (p) {
+    trackProductView({ name: p.name, id: p.id });
+  }
+}, { immediate: true });
 
 const category = computed(() => {
   if (!product.value?.product_type) return null;
@@ -71,6 +78,7 @@ function handleAddToCart() {
     quantity: quantity.value,
     image: product.value.image || undefined,
   });
+  trackAddToCart({ name: product.value.name, id: product.value.id, price: product.value.price });
   notifyItemAdded(product.value.name);
 
   if (addedTimeout) {

@@ -1,9 +1,14 @@
 <script setup lang="ts">
 const { shopName, shopAddress, shopLocation, shopEmail, shopPhone } = useShopInfo();
+const { trackPageView } = useAnalytics();
 
 useSeo({
   title: 'Contact Us',
   description: `Get in touch with ${shopName.value}`,
+});
+
+onMounted(() => {
+  trackPageView('Contact page');
 });
 
 const contactInfo = computed(() => [

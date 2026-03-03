@@ -1,12 +1,17 @@
 <script setup lang="ts">
 const { shopName, aboutContent } = useShopInfo();
 const { sanitizeHtml } = useSanitize();
+const { trackPageView } = useAnalytics();
 
 const sanitizedAboutContent = computed(() => sanitizeHtml(aboutContent.value));
 
 useSeo({
   title: 'About Us',
   description: `Learn more about ${shopName.value}`,
+});
+
+onMounted(() => {
+  trackPageView('About page');
 });
 </script>
 

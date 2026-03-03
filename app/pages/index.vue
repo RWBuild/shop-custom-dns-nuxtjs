@@ -13,6 +13,7 @@ useSeo({
 
 const { addItem } = useCart();
 const { notifyItemAdded } = useCartNotification();
+const { trackPageView, trackAddToCart } = useAnalytics();
 
 const productsStore = useProductsStore();
 const categoriesStore = useCategoriesStore();
@@ -38,8 +39,8 @@ async function handleTabChange(categoryId: number | null) {
   isFilteringProducts.value = false;
 }
 
-// Fetch data on mount
 onMounted(async () => {
+  trackPageView('Landing page');
   await Promise.all([
     categoriesStore.fetchCategories(),
     productsStore.fetchProducts(),
@@ -56,6 +57,7 @@ function handleAddToCart(product: ProductType) {
     quantity: 1,
     image: product.image || undefined,
   });
+  trackAddToCart({ name: product.name, id: product.id, price: product.price });
   notifyItemAdded(product.name);
 }
 
