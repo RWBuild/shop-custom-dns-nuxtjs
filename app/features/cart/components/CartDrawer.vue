@@ -1,10 +1,14 @@
 <script setup lang="ts">
+import { useVuelidate } from '@vuelidate/core';
+import { email, helpers, required } from '@vuelidate/validators';
 import { formatCurrency } from '~/features/shared/utils';
 
 const { isOpen, currentView, closeDrawer, goToCheckout, goToCart } = useCartDrawer();
 const { items, isEmpty, cartSummary, incrementQuantity, decrementQuantity, removeItem, clearCart } =
   useCart();
-const { createInvoice, isSubmitting, error: checkoutError, reset: resetCheckout } = useCheckout();
+const { createInvoice, isSubmitting, reset: resetCheckout } = useCheckout();
+
+const cartCurrency = computed(() => 'RWF');
 
 const checkoutForm = ref({
   firstName: '',
@@ -14,6 +18,39 @@ const checkoutForm = ref({
   address: '',
   description: '',
 });
+
+const isPhoneValid = ref(false);
+
+function handlePhoneValidation(valid: boolean) {
+  isPhoneValid.value = valid;
+}
+
+const validPhone = helpers.withMessage(
+  'Please enter a valid phone number',
+  () => isPhoneValid.value
+);
+
+const rules = computed(() => ({
+  firstName: {
+    required: helpers.withMessage('First name is required', required),
+  },
+  lastName: {
+    required: helpers.withMessage('Last name is required', required),
+  },
+  email: {
+    required: helpers.withMessage('Email is required', required),
+    email: helpers.withMessage('Please enter a valid email', email),
+  },
+  phone: {
+    required: helpers.withMessage('Phone number is required', required),
+    validPhone,
+  },
+  address: {
+    required: helpers.withMessage('Address is required', required),
+  },
+}));
+
+const v$ = useVuelidate(rules, checkoutForm);
 
 const showClearConfirm = ref(false);
 const orderSuccess = ref(false);
@@ -36,15 +73,8 @@ function handleCheckout() {
 }
 
 async function handlePlaceOrder() {
-  if (
-    !checkoutForm.value.firstName ||
-    !checkoutForm.value.lastName ||
-    !checkoutForm.value.email ||
-    !checkoutForm.value.phone ||
-    !checkoutForm.value.address
-  ) {
-    return;
-  }
+  const isValid = await v$.value.$validate();
+  if (!isValid) return;
 
   try {
     await createInvoice(
@@ -68,6 +98,7 @@ async function handlePlaceOrder() {
       address: '',
       description: '',
     };
+    v$.value.$reset();
 
     setTimeout(() => {
       orderSuccess.value = false;
@@ -87,6 +118,7 @@ watch(isOpen, (open) => {
     showClearConfirm.value = false;
     orderSuccess.value = false;
     resetCheckout();
+    v$.value.$reset();
     setTimeout(() => {
       goToCart();
     }, 300);
@@ -196,7 +228,7 @@ watch(isOpen, (open) => {
                   >
                     <span class="font-medium text-gray-900">Total</span>
                     <span class="font-semibold text-gray-900">
-                      {{ formatCurrency(cartSummary.total) }}
+                      {{ formatCurrency(cartSummary.total, cartCurrency) }}
                     </span>
                   </div>
                 </div>
@@ -226,8 +258,13 @@ watch(isOpen, (open) => {
                       id="firstName"
                       v-model="checkoutForm.firstName"
                       placeholder="John"
-                      required
+                      :highlight="v$.firstName.$error"
+                      :color="v$.firstName.$error ? 'error' : undefined"
+                      @blur="v$.firstName.$touch()"
                     />
+                    <p v-if="v$.firstName.$error" class="mt-1 text-xs text-red-500">
+                      {{ v$.firstName.$errors[0]?.$message }}
+                    </p>
                   </div>
                   <div>
                     <label for="lastName" class="mb-1.5 block text-sm font-medium text-gray-700">
@@ -238,8 +275,13 @@ watch(isOpen, (open) => {
                       id="lastName"
                       v-model="checkoutForm.lastName"
                       placeholder="Doe"
-                      required
+                      :highlight="v$.lastName.$error"
+                      :color="v$.lastName.$error ? 'error' : undefined"
+                      @blur="v$.lastName.$touch()"
                     />
+                    <p v-if="v$.lastName.$error" class="mt-1 text-xs text-red-500">
+                      {{ v$.lastName.$errors[0]?.$message }}
+                    </p>
                   </div>
                 </div>
 
@@ -253,8 +295,13 @@ watch(isOpen, (open) => {
                     v-model="checkoutForm.email"
                     type="email"
                     placeholder="john@example.com"
-                    required
+                    :highlight="v$.email.$error"
+                    :color="v$.email.$error ? 'error' : undefined"
+                    @blur="v$.email.$touch()"
                   />
+                  <p v-if="v$.email.$error" class="mt-1 text-xs text-red-500">
+                    {{ v$.email.$errors[0]?.$message }}
+                  </p>
                 </div>
 
                 <div>
@@ -262,7 +309,16 @@ watch(isOpen, (open) => {
                     Phone
                     <span class="text-red-500">*</span>
                   </label>
-                  <AppPhoneNumberInput id="phone" v-model="checkoutForm.phone" required />
+                  <AppPhoneNumberInput
+                    id="phone"
+                    v-model="checkoutForm.phone"
+                    :highlight="v$.phone.$error"
+                    @blur="v$.phone.$touch()"
+                    @valid="handlePhoneValidation"
+                  />
+                  <p v-if="v$.phone.$error" class="mt-1 text-xs text-red-500">
+                    {{ v$.phone.$errors[0]?.$message }}
+                  </p>
                 </div>
 
                 <div>
@@ -274,8 +330,13 @@ watch(isOpen, (open) => {
                     id="address"
                     v-model="checkoutForm.address"
                     placeholder="123 Main St, Kigali"
-                    required
+                    :highlight="v$.address.$error"
+                    :color="v$.address.$error ? 'error' : undefined"
+                    @blur="v$.address.$touch()"
                   />
+                  <p v-if="v$.address.$error" class="mt-1 text-xs text-red-500">
+                    {{ v$.address.$errors[0]?.$message }}
+                  </p>
                 </div>
 
                 <div>
@@ -302,13 +363,13 @@ watch(isOpen, (open) => {
                   >
                     <span class="text-gray-600">{{ item.name }} × {{ item.quantity }}</span>
                     <span class="font-medium text-gray-900">
-                      {{ formatCurrency(item.price * item.quantity) }}
+                      {{ formatCurrency(item.price * item.quantity, item.currency) }}
                     </span>
                   </div>
                   <div class="flex items-center justify-between border-t border-gray-200 pt-2">
                     <span class="font-medium text-gray-900">Total</span>
                     <span class="font-semibold text-gray-900">
-                      {{ formatCurrency(cartSummary.total) }}
+                      {{ formatCurrency(cartSummary.total, cartCurrency) }}
                     </span>
                   </div>
                 </div>
@@ -316,10 +377,6 @@ watch(isOpen, (open) => {
             </div>
 
             <div class="border-t border-gray-200 px-4 py-4 sm:px-6">
-              <div v-if="checkoutError" class="mb-3 rounded-lg bg-red-50 p-3 text-sm text-red-600">
-                {{ checkoutError }}
-              </div>
-
               <div
                 v-if="orderSuccess"
                 class="mb-3 flex items-center gap-2 rounded-lg bg-green-50 p-3 text-sm text-green-600"
@@ -331,15 +388,7 @@ watch(isOpen, (open) => {
               <button
                 type="submit"
                 class="flex w-full cursor-pointer items-center justify-center gap-2 rounded-full bg-primary px-6 py-3 text-sm font-medium text-white transition-colors hover:bg-primary/90 disabled:cursor-not-allowed disabled:opacity-50"
-                :disabled="
-                  isSubmitting ||
-                  orderSuccess ||
-                  !checkoutForm.firstName ||
-                  !checkoutForm.lastName ||
-                  !checkoutForm.email ||
-                  !checkoutForm.phone ||
-                  !checkoutForm.address
-                "
+                :disabled="isSubmitting || orderSuccess"
                 @click="handlePlaceOrder"
               >
                 <UIcon v-if="isSubmitting" name="i-lucide-loader-2" class="size-4 animate-spin" />
