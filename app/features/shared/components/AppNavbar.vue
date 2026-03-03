@@ -13,7 +13,6 @@ const { logoUrl, shopName } = useShopInfo();
 const {
   searchQuery,
   suggestions,
-  recentSearches,
   isLoading,
   isOpen: isSearchOpen,
   handleInput,
@@ -21,9 +20,6 @@ const {
   closeSearch,
   selectSuggestion,
   submitSearch,
-  selectRecentSearch,
-  clearRecentSearches,
-  removeRecentSearch,
 } = useProductSearch();
 
 const navigation = [
@@ -133,7 +129,7 @@ onUnmounted(() => {
                   @keyup.enter="handleSearchSubmit"
                   @keyup.escape="closeSearch"
                   @focus="openSearch"
-                />
+                >
                 <UIcon
                   name="i-lucide-search"
                   class="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-gray-400 pointer-events-none"
@@ -154,13 +150,9 @@ onUnmounted(() => {
             <SearchDropdown
               v-if="isSearchOpen"
               :suggestions="suggestions"
-              :recent-searches="recentSearches"
               :is-loading="isLoading"
               :query="searchQuery"
               @select-product="selectSuggestion"
-              @select-recent="selectRecentSearch"
-              @remove-recent="removeRecentSearch"
-              @clear-recent="clearRecentSearches"
               @submit="submitSearch"
             />
           </div>
