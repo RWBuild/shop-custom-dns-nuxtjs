@@ -28,6 +28,8 @@ function loadCart(): void {
 }
 
 export function useCart() {
+  const { trackCartCreated } = useAnalytics();
+
   onMounted(() => {
     loadCart();
   });
@@ -53,6 +55,7 @@ export function useCart() {
   });
 
   function addItem(item: Omit<CartItem, 'id'>): void {
+    const wasEmpty = cartItems.value.length === 0;
     const existingItem = cartItems.value.find(
       (i) => i.productId === item.productId && i.variant === item.variant
     );
@@ -64,6 +67,10 @@ export function useCart() {
         ...item,
         id: generateId(),
       });
+    }
+
+    if (wasEmpty) {
+      trackCartCreated();
     }
 
     persistCart();

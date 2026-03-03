@@ -7,6 +7,7 @@ const MAX_SUGGESTIONS = 6;
 export function useProductSearch() {
   const { shopSlug } = useShopInfo();
   const { posFetch } = useShopApi();
+  const { trackSearch } = useAnalytics();
 
   const searchQuery = ref('');
   const suggestions = ref<ProductListItem[]>([]);
@@ -106,6 +107,7 @@ export function useProductSearch() {
   async function submitSearch(query?: string) {
     const term = query || searchQuery.value;
     if (!term.trim()) return;
+    trackSearch(term.trim());
     closeSearch();
     await navigateTo(`/?search=${encodeURIComponent(term.trim())}`);
   }
