@@ -5,7 +5,7 @@ interface Props {
   product: Product | ProductListItem;
 }
 
-defineProps<Props>();
+const props = defineProps<Props>();
 
 const emit = defineEmits<{
   addToCart: [product: Product | ProductListItem];
@@ -14,7 +14,18 @@ const emit = defineEmits<{
 const { formatPrice } = useCurrency();
 
 const isAdded = ref(false);
+const isFittingDialogOpen = ref(false);
 let addedTimeout: ReturnType<typeof setTimeout> | null = null;
+
+const showAddToCart = computed(() => {
+  const option = props.product.purchase_option;
+  return !option || option === 'both' || option === 'purchase_only';
+});
+
+const showScheduleFitting = computed(() => {
+  const option = props.product.purchase_option;
+  return option === 'both' || option === 'fitting_only';
+});
 
 function handleAddToCart(product: Product | ProductListItem) {
   emit('addToCart', product);
@@ -27,6 +38,10 @@ function handleAddToCart(product: Product | ProductListItem) {
   addedTimeout = setTimeout(() => {
     isAdded.value = false;
   }, 2000);
+}
+
+function handleScheduleFitting() {
+  isFittingDialogOpen.value = true;
 }
 
 onUnmounted(() => {
@@ -53,7 +68,7 @@ onUnmounted(() => {
           placeholder
         />
         <div v-else class="flex h-full w-full items-center justify-center">
-          <UIcon name="i-lucide-image" class="size-10 text-gray-50" />
+          <UIcon name="i-lucide-image" class="size-10 text-gray-100" />
         </div>
         <span
           v-if="product.is_sold"
@@ -77,16 +92,36 @@ onUnmounted(() => {
         {{ formatPrice(product.price, product.currency) }}
       </p>
 
-      <button
-        type="button"
-        class="mt-1.5 inline-flex w-full cursor-pointer items-center justify-center gap-1 rounded-full bg-gray-800 px-2.5 py-1.5 text-[10px] font-medium text-white transition-colors duration-200 hover:bg-gray-700 disabled:cursor-not-allowed disabled:opacity-50 sm:w-fit sm:gap-1 sm:px-3 sm:py-1.5 sm:text-[10px]"
-        :class="{ 'bg-gray-900': isAdded }"
-        :disabled="product.is_sold"
-        @click.prevent="handleAddToCart(product)"
-      >
-        <UIcon name="i-heroicons-shopping-cart" class="size-3" />
-        <span>{{ isAdded ? 'Added' : 'Add to cart' }}</span>
-      </button>
+      <div class="mt-1.5 flex flex-wrap gap-1.5">
+        <button
+          v-if="showAddToCart"
+          type="button"
+          class="inline-flex flex-1 cursor-pointer items-center justify-center gap-1 rounded-full bg-gray-800 px-2.5 py-1.5 text-[10px] font-medium text-white transition-colors duration-200 hover:bg-gray-700 disabled:cursor-not-allowed disabled:opacity-50 sm:flex-none sm:px-3 sm:py-1.5"
+          :class="{ 'bg-gray-900': isAdded }"
+          :disabled="product.is_sold"
+          @click.prevent="handleAddToCart(product)"
+        >
+          <UIcon name="i-heroicons-shopping-cart" class="size-3" />
+          <span>{{ isAdded ? 'Added to cart' : 'Add to cart' }}</span>
+        </button>
+
+        <button
+          v-if="showScheduleFitting"
+          type="button"
+          class="inline-flex flex-1 cursor-pointer items-center justify-center gap-1 rounded-full bg-gray-950 px-2.5 py-1.5 text-[10px] font-medium text-white transition-colors duration-200 hover:bg-gray-800 disabled:cursor-not-allowed disabled:opacity-50 sm:flex-none sm:px-3 sm:py-1.5"
+          :disabled="product.is_sold"
+          @click.prevent="handleScheduleFitting"
+        >
+          <UIcon name="i-lucide-calendar" class="size-3" />
+          <span>Schedule fitting</span>
+        </button>
+      </div>
     </div>
+
+    <ScheduleFittingDialog
+      v-model:open="isFittingDialogOpen"
+      :product-id="product.id"
+      :product-name="product.name"
+    />
   </article>
 </template>
