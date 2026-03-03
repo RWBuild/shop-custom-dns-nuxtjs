@@ -67,10 +67,7 @@ const contactInfo = computed(() => [
           </div>
         </div>
 
-        <div v-if="contactInfo.length === 0" class="mt-10 text-center text-gray-500">
-          <p>Contact information coming soon.</p>
         </div>
-      </div>
     </UContainer>
   </div>
 </template>
