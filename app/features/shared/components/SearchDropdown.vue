@@ -4,7 +4,6 @@ import { formatCurrency, type CurrencyCode } from '~/features/shared/utils';
 
 interface Props {
   suggestions: Product[];
-  recentSearches: string[];
   isLoading: boolean;
   query: string;
 }
@@ -13,9 +12,6 @@ defineProps<Props>();
 
 const emit = defineEmits<{
   selectProduct: [product: Product];
-  selectRecent: [query: string];
-  removeRecent: [query: string];
-  clearRecent: [];
   submit: [query: string];
 }>();
 
@@ -25,7 +21,10 @@ function highlightMatch(text: string, query: string): string {
   if (!query.trim()) return text;
   const escaped = query.trim().replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
   const regex = new RegExp(`(${escaped})`, 'gi');
-  return text.replace(regex, '<mark class="bg-primary/20 text-primary font-semibold px-0.5 rounded">$1</mark>');
+  return text.replace(
+    regex,
+    '<mark class="bg-primary/20 text-primary font-semibold px-0.5 rounded">$1</mark>'
+  );
 }
 </script>
 
@@ -41,42 +40,7 @@ function highlightMatch(text: string, query: string): string {
     </div>
 
     <template v-else>
-      <div v-if="!query.trim() && recentSearches.length > 0">
-        <div class="flex items-center justify-between px-4 py-3 bg-gray-50 border-b border-gray-100">
-          <span class="text-xs font-semibold text-gray-500 uppercase tracking-wider">Recent Searches</span>
-          <button
-            type="button"
-            class="text-xs text-primary hover:text-primary/80 font-medium cursor-pointer"
-            @click="emit('clearRecent')"
-          >
-            Clear all
-          </button>
-        </div>
-        <div class="py-1">
-          <button
-            v-for="recent in recentSearches"
-            :key="recent"
-            type="button"
-            class="w-full flex items-center gap-3 px-4 py-2.5 hover:bg-gray-50 cursor-pointer group transition-colors"
-            @click="emit('selectRecent', recent)"
-          >
-            <div class="flex items-center justify-center size-8 rounded-full bg-gray-100 group-hover:bg-gray-200 transition-colors">
-              <UIcon name="i-lucide-clock" class="size-4 text-gray-500" />
-            </div>
-            <span class="flex-1 text-left text-sm text-gray-700 font-medium">{{ recent }}</span>
-            <button
-              type="button"
-              class="p-1.5 opacity-0 group-hover:opacity-100 hover:bg-gray-200 rounded-full transition-all cursor-pointer"
-              aria-label="Remove"
-              @click.stop="emit('removeRecent', recent)"
-            >
-              <UIcon name="i-lucide-x" class="size-3.5 text-gray-400" />
-            </button>
-          </button>
-        </div>
-      </div>
-
-      <div v-else-if="query.trim() && suggestions.length > 0">
+      <div v-if="query.trim() && suggestions.length > 0">
         <div class="px-4 py-3 bg-gray-50 border-b border-gray-100">
           <span class="text-xs font-semibold text-gray-500 uppercase tracking-wider">Products</span>
         </div>
@@ -85,10 +49,12 @@ function highlightMatch(text: string, query: string): string {
             v-for="product in suggestions"
             :key="product.id"
             type="button"
-            class="w-full flex items-center gap-3 px-4 py-3 hover:bg-gray-50 cursor-pointer transition-colors border-b border-gray-50 last:border-0"
+            class="w-full flex items-center gap-3 px-4 py-3 hover:bg-gray-50 cursor-pointer transition-colors border-b border-gray-50 last:border-0 group"
             @click="emit('selectProduct', product)"
           >
-            <div class="size-14 rounded-lg overflow-hidden bg-gray-100 shrink-0 ring-1 ring-gray-200">
+            <div
+              class="size-14 rounded-lg overflow-hidden bg-gray-100 shrink-0 ring-1 ring-gray-200"
+            >
               <NuxtImg
                 :src="product.image || placeholderImage"
                 :alt="product.name"
@@ -115,7 +81,9 @@ function highlightMatch(text: string, query: string): string {
                 </span>
               </div>
             </div>
-            <div class="shrink-0 p-1.5 rounded-full bg-gray-100 group-hover:bg-primary/10">
+            <div
+              class="shrink-0 p-1.5 flex items-center justify-center w-6 h-6 rounded-full bg-gray-100 group-hover:bg-primary/50 transition-colors"
+            >
               <UIcon name="i-lucide-chevron-right" class="size-4 text-gray-400" />
             </div>
           </button>
@@ -128,7 +96,9 @@ function highlightMatch(text: string, query: string): string {
         >
           <UIcon name="i-lucide-search" class="size-4 text-primary" />
           <span class="text-sm font-medium text-gray-700">
-            View all results for "<span class="text-primary">{{ query }}</span>"
+            View all results for "
+            <span class="text-primary">{{ query }}</span>
+            "
           </span>
         </button>
       </div>

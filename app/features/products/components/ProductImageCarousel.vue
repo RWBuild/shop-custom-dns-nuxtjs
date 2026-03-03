@@ -20,7 +20,13 @@ const activeIndex = ref(0);
 const videoPlayerRef = ref<HTMLVideoElement | null>(null);
 const plyrInstance = ref<PlyrType | null>(null);
 
+const hasImages = computed(() => props.images.length > 0);
+
 const mediaItems = computed<MediaItem[]>(() => {
+  if (!hasImages.value) {
+    return [{ url: '', type: 'image' }];
+  }
+
   const items = props.images.map((url) => {
     const isVideo = /\.(mp4|webm|ogg|mov)$/i.test(url) || url.includes('video');
     return {
@@ -39,7 +45,10 @@ const mediaItems = computed<MediaItem[]>(() => {
   });
 });
 
-const activeMedia = computed(() => mediaItems.value[activeIndex.value] || mediaItems.value[0]);
+const defaultMedia: MediaItem = { url: '', type: 'image' };
+const activeMedia = computed<MediaItem>(
+  () => mediaItems.value[activeIndex.value] ?? mediaItems.value[0] ?? defaultMedia
+);
 
 const imageItems = computed(() => mediaItems.value.filter((m) => m.type === 'image'));
 
@@ -138,7 +147,7 @@ watch(activeMedia, (newMedia, oldMedia) => {
     destroyVideoPlayer();
   }
 
-  if (newMedia.type === 'video') {
+  if (newMedia?.type === 'video') {
     nextTick(() => {
       initVideoPlayer(true);
     });
@@ -181,26 +190,33 @@ function isVideo(media: MediaItem): boolean {
           :poster="activeMedia.poster || placeholderImage"
           playsinline
         >
-          <source :src="activeMedia.url" type="video/mp4" />
+          <source :src="activeMedia.url" type="video/mp4" >
         </video>
       </div>
 
-      <button v-else type="button" class="h-full w-full cursor-zoom-in" @click="openLightbox">
-        <NuxtImg
-          :src="activeMedia.url || placeholderImage"
-          :alt="alt"
-          class="h-full w-full object-cover transition-transform duration-300"
-          format="webp"
-          quality="85"
-          placeholder
-        />
-      </button>
+      <template v-else>
+        <div v-if="!hasImages" class="flex h-full w-full items-center justify-center bg-gray-50">
+          <UIcon name="i-lucide-image" class="size-16 text-gray-200" />
+        </div>
+        <button v-else type="button" class="h-full w-full cursor-zoom-in" @click="openLightbox">
+          <NuxtImg
+            :src="activeMedia.url"
+            :alt="alt"
+            class="h-full w-full object-cover transition-transform duration-300"
+            format="webp"
+            quality="85"
+            placeholder
+          />
+        </button>
+      </template>
 
       <div
-        v-if="activeMedia.type === 'image'"
-        class="pointer-events-none absolute right-3 top-3 rounded-full bg-black/50 p-2 text-white"
+        v-if="activeMedia.type === 'image' && hasImages"
+        class="pointer-events-none absolute right-3 top-3"
       >
-        <UIcon name="i-heroicons-magnifying-glass-plus" class="size-5" />
+        <div class="flex items-center gap-1 rounded-full bg-black/50 p-2 text-white">
+          <UIcon name="i-heroicons-magnifying-glass-plus" class="size-5" />
+        </div>
       </div>
 
       <template v-if="mediaItems.length > 1">

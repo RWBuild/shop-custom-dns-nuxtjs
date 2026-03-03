@@ -1,4 +1,6 @@
 <script setup lang="ts">
+type InputColor = 'error' | 'primary' | 'secondary' | 'success' | 'info' | 'warning' | 'neutral';
+
 interface Props {
   modelValue?: string | number;
   type?: string;
@@ -12,6 +14,8 @@ interface Props {
   maxlength?: number;
   icon?: string;
   trailingIcon?: string;
+  highlight?: boolean;
+  color?: InputColor;
 }
 
 withDefaults(defineProps<Props>(), {
@@ -20,6 +24,7 @@ withDefaults(defineProps<Props>(), {
   disabled: false,
   readonly: false,
   required: false,
+  highlight: false,
 });
 
 const emit = defineEmits<{
@@ -46,6 +51,8 @@ function handleInput(event: Event) {
     :maxlength="maxlength"
     :icon="icon"
     :trailing-icon="trailingIcon"
+    :highlight="highlight"
+    :color="color"
     variant="none"
     class="w-full"
     :ui="{

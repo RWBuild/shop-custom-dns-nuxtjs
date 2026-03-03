@@ -4,8 +4,10 @@ import { slugify } from '~/features/shared/utils';
 
 type ProductType = Product | ProductListItem;
 
+const { shopName } = useShopInfo();
+
 useSeo({
-  title: 'Home',
+  title: shopName.value || 'Home',
   description: '',
 });
 
@@ -15,19 +17,26 @@ const { notifyItemAdded } = useCartNotification();
 const productsStore = useProductsStore();
 const categoriesStore = useCategoriesStore();
 
-const isLoading = computed(() => productsStore.isLoading || categoriesStore.isLoading);
+const hasFetched = ref(false);
+const isInitialLoading = computed(() => !hasFetched.value || categoriesStore.isLoading);
+const isFilteringProducts = ref(false);
 
-// Transform categories to include products (for initial "All" tab we show all products)
-const categoriesWithProducts = computed(() => {
+// Transform categories for tabs
+const categoryTabs = computed(() => {
   return categoriesStore.categories.map((cat) => ({
     ...cat,
     slug: slugify(cat.name),
-    products: productsStore.products.filter((p) => p.product_type_id === cat.id),
   }));
 });
 
-// All products for the "All" tab
-const allProducts = computed(() => productsStore.products);
+// Products from store
+const products = computed(() => productsStore.products);
+
+async function handleTabChange(categoryId: number | null) {
+  isFilteringProducts.value = true;
+  await productsStore.filterByCategory(categoryId);
+  isFilteringProducts.value = false;
+}
 
 // Fetch data on mount
 onMounted(async () => {
@@ -35,6 +44,7 @@ onMounted(async () => {
     categoriesStore.fetchCategories(),
     productsStore.fetchProducts(),
   ]);
+  hasFetched.value = true;
 });
 
 function handleAddToCart(product: ProductType) {
@@ -42,6 +52,7 @@ function handleAddToCart(product: ProductType) {
     productId: String(product.id),
     name: product.name,
     price: product.price,
+    currency: product.currency,
     quantity: 1,
     image: product.image || undefined,
   });
@@ -85,12 +96,14 @@ onMounted(() => {
         Shop by Categories
       </h2>
 
-      <CategoryTabsSkeleton v-if="isLoading && !allProducts.length" />
+      <CategoryTabsSkeleton v-if="isInitialLoading" />
       <CategoryProductTabs
         v-else
-        :categories="categoriesWithProducts"
-        :all-products="allProducts"
+        :categories="categoryTabs"
+        :products="products"
+        :is-loading="isFilteringProducts"
         @add-to-cart="handleAddToCart"
+        @tab-change="handleTabChange"
       />
 
       <!-- Load more trigger for infinite scroll -->

@@ -15,14 +15,10 @@ const emit = defineEmits<{
 const {
   searchQuery,
   suggestions,
-  recentSearches,
   isLoading,
   handleInput,
   selectSuggestion,
   submitSearch,
-  selectRecentSearch,
-  clearRecentSearches,
-  removeRecentSearch,
   clearSearch,
 } = useProductSearch();
 
@@ -42,21 +38,16 @@ function handleSearchInput(event: Event) {
   handleInput(target.value);
 }
 
-function handleSearchSubmit() {
+async function handleSearchSubmit() {
   if (searchQuery.value.trim()) {
-    submitSearch();
     closeSearch();
+    await submitSearch();
   }
 }
 
-function handleSelectSuggestion(product: { slug: string }) {
-  selectSuggestion(product);
+async function handleSelectSuggestion(product: { slug: string }) {
   closeSearch();
-}
-
-function handleSelectRecent(query: string) {
-  selectRecentSearch(query);
-  closeSearch();
+  await selectSuggestion(product);
 }
 
 function handleClearInput() {
@@ -107,7 +98,7 @@ watch(isOpen, (open) => {
               enterkeyhint="search"
               @input="handleSearchInput"
               @keyup.enter="handleSearchSubmit"
-            />
+            >
             <UIcon
               name="i-lucide-search"
               class="pointer-events-none absolute left-3.5 top-1/2 size-4 -translate-y-1/2 text-gray-400"
@@ -156,42 +147,7 @@ watch(isOpen, (open) => {
             </button>
           </div>
 
-                    <div v-else-if="recentSearches.length > 0 && !searchQuery" class="py-2">
-            <div class="flex items-center justify-between px-4 pb-2">
-              <p class="text-xs font-medium text-gray-500">Recent searches</p>
-              <button
-                type="button"
-                class="cursor-pointer text-xs font-medium text-primary hover:text-primary/80"
-                @click="clearRecentSearches"
-              >
-                Clear all
-              </button>
-            </div>
-            <button
-              v-for="recent in recentSearches"
-              :key="recent"
-              type="button"
-              class="flex w-full cursor-pointer items-center justify-between px-4 py-3 text-left transition-colors active:bg-gray-50"
-              @click="handleSelectRecent(recent)"
-            >
-              <div class="flex items-center gap-3">
-                <div class="flex size-9 items-center justify-center rounded-full bg-gray-100">
-                  <UIcon name="i-lucide-clock" class="size-4 text-gray-400" />
-                </div>
-                <span class="text-sm text-gray-700">{{ recent }}</span>
-              </div>
-              <button
-                type="button"
-                class="flex size-8 cursor-pointer items-center justify-center rounded-full text-gray-400 transition-colors hover:bg-gray-100 hover:text-gray-600"
-                aria-label="Remove search"
-                @click.stop="removeRecentSearch(recent)"
-              >
-                <UIcon name="i-lucide-x" class="size-4" />
-              </button>
-            </button>
-          </div>
-
-                    <div
+          <div
             v-else-if="!searchQuery"
             class="flex flex-col items-center justify-center px-6 py-16 text-center"
           >

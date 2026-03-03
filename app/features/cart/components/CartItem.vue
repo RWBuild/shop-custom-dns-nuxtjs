@@ -68,7 +68,7 @@ const emit = defineEmits<{
         </div>
 
         <p class="text-xs font-semibold text-gray-900">
-          {{ formatCurrency(item.price * item.quantity) }}
+          {{ formatCurrency(item.price * item.quantity, item.currency) }}
         </p>
       </div>
     </div>

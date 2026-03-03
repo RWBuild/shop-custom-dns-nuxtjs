@@ -1,11 +1,13 @@
 <script setup lang="ts">
 import {
-  AsYouType,
+  formatIncompletePhoneNumber,
   getCountries,
   getCountryCallingCode,
-  parsePhoneNumber,
+  getExampleNumber,
+  parsePhoneNumberFromString,
   type CountryCode,
 } from 'libphonenumber-js';
+import examples from 'libphonenumber-js/mobile/examples';
 
 interface Props {
   modelValue?: string;
@@ -16,14 +18,16 @@ interface Props {
   required?: boolean;
   name?: string;
   id?: string;
+  highlight?: boolean;
 }
 
 const props = withDefaults(defineProps<Props>(), {
   defaultCountry: 'RW',
-  placeholder: '000 000 000',
+  placeholder: '788 000 000',
   disabled: false,
   readonly: false,
   required: false,
+  highlight: false,
 });
 
 const emit = defineEmits<{
@@ -60,68 +64,128 @@ const countryOptions = computed(() =>
 );
 
 const selectedCountry = ref<CountryCode>(props.defaultCountry);
-const phoneNumber = ref('');
 
-function parseInitialValue() {
-  if (!props.modelValue) return;
+const nationalDigits = ref('');
 
+let isInternalUpdate = false;
+
+const maxPhoneLength = computed(() => {
   try {
-    const parsed = parsePhoneNumber(props.modelValue);
-    if (parsed) {
-      selectedCountry.value = (parsed.country as CountryCode) || props.defaultCountry;
-      phoneNumber.value = parsed.nationalNumber;
+    const example = getExampleNumber(selectedCountry.value, examples);
+    if (example) {
+      return example.nationalNumber.length;
     }
   } catch {
-    phoneNumber.value = props.modelValue.replace(/^\+\d+/, '');
+    // Fallback
+  }
+  return 10;
+});
+
+
+const displayValue = computed(() => {
+  if (!nationalDigits.value) return '';
+
+  const formatted = formatIncompletePhoneNumber(nationalDigits.value, selectedCountry.value);
+
+  return formatted;
+});
+
+const currentCallingCode = computed(() => `+${getCountryCallingCode(selectedCountry.value)}`);
+
+
+function parseFromModelValue(value: string | undefined) {
+  if (!value) {
+    nationalDigits.value = '';
+    return;
+  }
+
+  const parsed = parsePhoneNumberFromString(value);
+  if (parsed) {
+    if (parsed.country) {
+      selectedCountry.value = parsed.country as CountryCode;
+    }
+    nationalDigits.value = parsed.nationalNumber;
+  } else {
+    const digits = value.replace(/\D/g, '');
+    const callingCode = getCountryCallingCode(selectedCountry.value);
+
+   
+    if (digits.startsWith(callingCode)) {
+      nationalDigits.value = digits.slice(callingCode.length);
+    } else {
+      nationalDigits.value = digits;
+    }
   }
 }
 
+
+onMounted(() => {
+  if (props.modelValue) {
+    parseFromModelValue(props.modelValue);
+    validateAndEmit();
+  }
+});
+
 watch(
   () => props.modelValue,
-  () => parseInitialValue(),
-  { immediate: true }
+  (newValue) => {
+    if (isInternalUpdate) return;
+    parseFromModelValue(newValue);
+  }
 );
 
 function handlePhoneInput(event: Event) {
   const input = event.target as HTMLInputElement;
-  const rawValue = input.value.replace(/\D/g, '');
-  const formatter = new AsYouType(selectedCountry.value);
-  phoneNumber.value = formatter.input(rawValue);
-  emitValue();
+
+  let digits = input.value.replace(/\D/g, '');
+
+  digits = digits.slice(0, maxPhoneLength.value);
+
+  nationalDigits.value = digits;
+
+  validateAndEmit();
 }
 
 function handleCountryChange(country: CountryCode) {
   selectedCountry.value = country;
-  emitValue();
+  // Trim digits if they exceed new country's max length
+  if (nationalDigits.value.length > maxPhoneLength.value) {
+    nationalDigits.value = nationalDigits.value.slice(0, maxPhoneLength.value);
+  }
+  validateAndEmit();
 }
 
-function emitValue() {
-  const callingCode = getCountryCallingCode(selectedCountry.value);
-  const cleanNumber = phoneNumber.value.replace(/\D/g, '');
+function validateAndEmit() {
+  const digits = nationalDigits.value;
 
-  if (!cleanNumber) {
+  if (!digits) {
+    isInternalUpdate = true;
     emit('update:modelValue', '');
     emit('valid', false);
+    nextTick(() => {
+      isInternalUpdate = false;
+    });
     return;
   }
 
-  const fullNumber = `+${callingCode}${cleanNumber}`;
+  const callingCode = getCountryCallingCode(selectedCountry.value);
+  const fullNumber = `+${callingCode}${digits}`;
 
-  try {
-    const parsed = parsePhoneNumber(fullNumber);
-    emit('valid', parsed?.isValid() || false);
-  } catch {
-    emit('valid', false);
-  }
 
+  const parsed = parsePhoneNumberFromString(fullNumber, selectedCountry.value);
+  const isValid = parsed?.isValid() || false;
+
+  isInternalUpdate = true;
+  emit('valid', isValid);
   emit('update:modelValue', fullNumber);
+  nextTick(() => {
+    isInternalUpdate = false;
+  });
 }
-
-const currentCallingCode = computed(() => `+${getCountryCallingCode(selectedCountry.value)}`);
 </script>
 
 <template>
-  <div class="flex gap-2 w-full">
+  <div class="flex w-full gap-2">
     <USelectMenu
       :model-value="selectedCountry"
       :items="countryOptions"
@@ -132,7 +196,7 @@ const currentCallingCode = computed(() => `+${getCountryCallingCode(selectedCoun
         base: 'w-full px-3 py-2 bg-gray-brand-4 rounded-lg text-sm text-gray-brand-neutral-2 focus:ring-2 focus:ring-primary/20 !border-0 outline-none cursor-pointer !outline-none',
         value: 'text-gray-brand-neutral-2 font-medium',
         placeholder: 'text-gray-brand-2',
-        content: 'max-h-60',
+        content: 'max-h-60 z-[100]',
       }"
       @update:model-value="handleCountryChange"
     >
@@ -142,25 +206,29 @@ const currentCallingCode = computed(() => `+${getCountryCallingCode(selectedCoun
 
       <template #item="{ item }">
         <span class="font-medium">{{ item.callingCode }}</span>
-        <span class="text-gray-brand-2 text-xs ml-1">({{ item.value }})</span>
+        <span class="ml-1 text-xs text-gray-brand-2">({{ item.value }})</span>
       </template>
     </USelectMenu>
 
     <input
       :id="id"
       :name="name"
-      :value="phoneNumber"
+      :value="displayValue"
       type="tel"
+      inputmode="numeric"
+      autocomplete="tel-national"
       :placeholder="placeholder"
       :disabled="disabled"
       :readonly="readonly"
       :required="required"
+      :maxlength="maxPhoneLength + 3"
       :class="[
         'flex-1 px-4 py-2 bg-gray-brand-4 rounded-lg text-sm text-gray-brand-neutral-2',
         'placeholder:text-gray-brand-2 focus:ring-2 focus:ring-primary/20 outline-none border-0',
         disabled ? 'opacity-50 cursor-not-allowed' : '',
+        props.highlight ? 'ring-1 ring-red-500' : '',
       ]"
       @input="handlePhoneInput"
-    />
+    >
   </div>
 </template>

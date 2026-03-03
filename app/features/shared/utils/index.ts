@@ -1,79 +1,84 @@
 import currency from 'currency.js';
 
-export type CurrencyCode = 'RWF' | 'USD' | 'EUR' | 'GBP';
+export type CurrencyCode = string;
 
-interface CurrencyConfig {
-  symbol: string;
-  precision: number;
-  pattern: string;
-  separator: string;
-  decimal: string;
+function normalizeCurrencyCode(code: string): string {
+  return code.toUpperCase().trim();
 }
 
-const currencyConfigs: Record<CurrencyCode, CurrencyConfig> = {
-  RWF: {
-    symbol: 'RWF',
-    precision: 0,
-    pattern: '# !',
-    separator: ',',
-    decimal: '.',
-  },
-  USD: {
-    symbol: '$',
-    precision: 2,
-    pattern: '!#',
-    separator: ',',
-    decimal: '.',
-  },
-  EUR: {
-    symbol: '€',
-    precision: 2,
-    pattern: '# !',
-    separator: ' ',
-    decimal: ',',
-  },
-  GBP: {
-    symbol: '£',
-    precision: 2,
-    pattern: '!#',
-    separator: ',',
-    decimal: '.',
-  },
-};
+const precisionCache = new Map<string, number>();
 
-function getCurrencyOptions(code: CurrencyCode): currency.Options {
-  const config = currencyConfigs[code];
-  return {
-    symbol: config.symbol,
-    precision: config.precision,
-    pattern: config.pattern,
-    separator: config.separator,
-    decimal: config.decimal,
-  };
+function getCurrencyPrecision(code: string): number {
+  const normalizedCode = normalizeCurrencyCode(code);
+
+  if (precisionCache.has(normalizedCode)) {
+    return precisionCache.get(normalizedCode)!;
+  }
+
+  try {
+    const formatter = new Intl.NumberFormat('en-US', {
+      style: 'currency',
+      currency: normalizedCode,
+    });
+    const parts = formatter.formatToParts(1.11);
+    const fractionPart = parts.find((p) => p.type === 'fraction');
+    const precision = fractionPart ? fractionPart.value.length : 0;
+    precisionCache.set(normalizedCode, precision);
+    return precision;
+  } catch {
+    return 2;
+  }
 }
 
-export function formatCurrency(value: number, code: CurrencyCode = 'RWF'): string {
-  return currency(value, getCurrencyOptions(code)).format();
+export function formatCurrency(
+  value: number,
+  code: CurrencyCode = 'RWF',
+  locale = 'en-US',
+): string {
+  const normalizedCode = normalizeCurrencyCode(code);
+
+  try {
+    return new Intl.NumberFormat(locale, {
+      style: 'currency',
+      currency: normalizedCode,
+    }).format(value);
+  } catch {
+    // Fallback for invalid currency codes
+    return `${value.toLocaleString(locale)} ${normalizedCode}`;
+  }
 }
 
 export function parseCurrency(value: string, code: CurrencyCode = 'RWF'): number {
-  return currency(value, getCurrencyOptions(code)).value;
+  const precision = getCurrencyPrecision(code);
+  return currency(value, { precision }).value;
 }
 
 export function addCurrency(a: number, b: number, code: CurrencyCode = 'RWF'): number {
-  return currency(a, getCurrencyOptions(code)).add(b).value;
+  const precision = getCurrencyPrecision(code);
+  return currency(a, { precision }).add(b).value;
 }
 
 export function subtractCurrency(a: number, b: number, code: CurrencyCode = 'RWF'): number {
-  return currency(a, getCurrencyOptions(code)).subtract(b).value;
+  const precision = getCurrencyPrecision(code);
+  return currency(a, { precision }).subtract(b).value;
 }
 
-export function multiplyCurrency(value: number, multiplier: number, code: CurrencyCode = 'RWF'): number {
-  return currency(value, getCurrencyOptions(code)).multiply(multiplier).value;
+export function multiplyCurrency(
+  value: number,
+  multiplier: number,
+  code: CurrencyCode = 'RWF',
+): number {
+  const precision = getCurrencyPrecision(code);
+  return currency(value, { precision }).multiply(multiplier).value;
 }
 
-export function divideCurrency(value: number, divisor: number, code: CurrencyCode = 'RWF'): number {
-  return currency(value, getCurrencyOptions(code)).divide(divisor).value;
+export function divideCurrency(
+  value: number,
+  divisor: number,
+  code: CurrencyCode = 'RWF',
+): number {
+  const precision = getCurrencyPrecision(code);
+  return currency(value, { precision }).divide(divisor).value;
 }
 
 export function generateId(): string {

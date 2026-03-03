@@ -2,20 +2,39 @@
 import type { ProductImage } from '~/features/products/types/product';
 
 const route = useRoute();
-const slug = route.params.slug as string;
+const slug = computed(() => route.params.slug as string);
 const { addItem } = useCart();
 const { notifyItemAdded } = useCartNotification();
 const { formatPrice } = useCurrency();
+const { sanitizeHtml } = useSanitize();
 
 const productsStore = useProductsStore();
 
-const isLoading = computed(() => productsStore.isLoadingProduct);
-const product = computed(() => productsStore.currentProduct);
-const error = computed(() => productsStore.error);
+const { data: product, status } = await useAsyncData(
+  `product-${slug.value}`,
+  () => productsStore.fetchProductBySlug(slug.value),
+  { server: false, watch: [slug] }
+);
+
+const isLoading = computed(() => status.value === 'pending' || status.value === 'idle');
 
 const category = computed(() => {
   if (!product.value?.product_type) return null;
   return product.value.product_type;
+});
+
+const sanitizedDescription = computed(() => {
+  if (!product.value?.description) return null;
+  const desc = product.value.description.trim();
+  if (desc === 'null' || desc === 'undefined' || desc === '') return null;
+  return sanitizeHtml(desc);
+});
+
+const sanitizedShortDescription = computed(() => {
+  if (!product.value?.short_description) return null;
+  const desc = product.value.short_description.trim();
+  if (desc === 'null' || desc === 'undefined' || desc === '') return null;
+  return desc;
 });
 
 const categorySlug = computed(() => {
@@ -48,6 +67,7 @@ function handleAddToCart() {
     productId: String(product.value.id),
     name: product.value.name,
     price: product.value.price,
+    currency: product.value.currency,
     quantity: quantity.value,
     image: product.value.image || undefined,
   });
@@ -67,12 +87,6 @@ onUnmounted(() => {
   if (addedTimeout) {
     clearTimeout(addedTimeout);
   }
-  productsStore.clearCurrentProduct();
-});
-
-// Fetch product on mount
-onMounted(async () => {
-  await productsStore.fetchProductBySlug(slug);
 });
 
 // Dynamic SEO
@@ -81,7 +95,11 @@ useHead({
 });
 
 useSeoMeta({
-  description: computed(() => product.value?.short_description || ''),
+  description: computed(
+    () =>
+      sanitizedShortDescription.value ||
+      `Shop ${product.value?.name || 'this product'} at great prices.`
+  ),
 });
 </script>
 
@@ -114,64 +132,64 @@ useSeoMeta({
         </ol>
       </nav>
 
-      <div class="grid gap-8 lg:grid-cols-2 lg:gap-12">
+      <div class="grid gap-6 lg:grid-cols-2 lg:gap-10">
         <div>
           <ProductImageCarousel :images="productImages" :alt="product.name" />
         </div>
 
         <div class="flex flex-col">
-          <h1 class="text-2xl font-bold text-gray-900 sm:text-3xl">
+          <h1 class="text-lg font-semibold text-gray-900 capitalize">
             {{ product.name }}
           </h1>
 
-          <p class="mt-4 text-2xl font-bold text-primary sm:text-3xl">
-            {{ formatPrice(product.price) }}
+          <p class="mt-2 text-lg font-semibold text-primary">
+            {{ formatPrice(product.price, product.currency) }}
           </p>
 
-          <div v-if="product.is_sold" class="mt-4">
+          <div v-if="product.is_sold" class="mt-3">
             <span
-              class="inline-flex rounded-full bg-red-100 px-3 py-1 text-sm font-medium text-red-600"
+              class="inline-flex rounded-full bg-red-100 px-2.5 py-0.5 text-xs font-medium text-red-600"
             >
               Sold Out
             </span>
           </div>
 
-          <p v-if="product.short_description" class="mt-4 text-gray-600">
-            {{ product.short_description }}
+          <p v-if="sanitizedShortDescription" class="mt-3 text-sm text-gray-600">
+            {{ sanitizedShortDescription }}
           </p>
 
-          <div class="mt-6 flex flex-col gap-4">
-            <div class="flex items-center gap-3">
-              <span class="text-sm font-medium text-gray-700">Quantity:</span>
-              <QuantitySelector v-model="quantity" :min="1" :max="10" :disabled="product.is_sold" />
+          <div class="mt-5 flex flex-col gap-3">
+            <div class="flex items-center gap-2">
+              <span class="text-xs font-medium text-gray-700">Quantity:</span>
+              <QuantitySelector v-model="quantity" :min="1" :disabled="product.is_sold" />
             </div>
 
             <button
               type="button"
-              class="inline-flex w-fit flex-1 cursor-pointer items-center justify-center gap-2 rounded-full bg-primary px-8 py-3 text-sm font-medium text-white transition-colors hover:bg-primary/75 disabled:cursor-not-allowed disabled:opacity-50 sm:flex-none"
+              class="inline-flex w-fit cursor-pointer items-center justify-center gap-1.5 rounded-full bg-primary px-5 py-2 text-xs font-medium text-white transition-colors hover:bg-primary/75 disabled:cursor-not-allowed disabled:opacity-50"
               :class="{ 'bg-primary/85': isAdded }"
               :disabled="product.is_sold"
               @click="handleAddToCart"
             >
-              <UIcon name="i-heroicons-shopping-cart" class="size-5" />
+              <UIcon name="i-heroicons-shopping-cart" class="size-4" />
               <span>{{ isAdded ? 'Added to Cart' : 'Add to Cart' }}</span>
             </button>
           </div>
 
-          <span class="my-6 block border-t border-gray-200" />
+          <span class="my-5 block border-t border-gray-200" />
 
-          <div v-if="product.description">
+          <div v-if="sanitizedDescription">
             <!-- eslint-disable vue/no-v-html -->
             <div
-              class="product-description mt-3 text-sm leading-relaxed text-gray-600 [&_li]:text-gray-600 [&_p]:mb-3 [&_strong]:font-semibold [&_strong]:text-gray-900 [&_ul]:my-3 [&_ul]:list-disc [&_ul]:space-y-1 [&_ul]:pl-5"
-              v-html="product.description"
+              class="product-description text-xs leading-relaxed text-gray-600 [&_li]:text-gray-600 [&_p]:mb-2 [&_strong]:font-semibold [&_strong]:text-gray-900 [&_ul]:my-2 [&_ul]:list-disc [&_ul]:space-y-1 [&_ul]:pl-4"
+              v-html="sanitizedDescription"
             />
             <!-- eslint-enable vue/no-v-html -->
           </div>
 
-          <div class="mt-6">
-            <h2 class="text-lg font-semibold text-gray-900">Product Details</h2>
-            <dl class="mt-3 space-y-2 text-sm">
+          <div class="mt-5">
+            <h2 class="text-sm font-semibold text-gray-900">Product Details</h2>
+            <dl class="mt-2 space-y-1.5 text-xs">
               <div class="flex justify-between">
                 <dt class="text-gray-500">Availability</dt>
                 <dd
@@ -181,22 +199,14 @@ useSeoMeta({
                   {{ product.is_sold ? 'Out of Stock' : 'In Stock' }}
                 </dd>
               </div>
+              <div v-if="category" class="flex justify-between">
+                <dt class="text-gray-500">Category</dt>
+                <dd class="font-medium text-gray-900">{{ category.name }}</dd>
+              </div>
             </dl>
           </div>
         </div>
       </div>
-    </UContainer>
-
-    <UContainer v-else-if="error" class="py-20 text-center">
-      <UIcon name="i-heroicons-exclamation-circle" class="mx-auto size-16 text-gray-300" />
-      <h1 class="mt-4 text-2xl font-bold text-gray-900">Product Not Found</h1>
-      <p class="mt-2 text-gray-500">
-        The product you're looking for doesn't exist or has been removed.
-      </p>
-      <NuxtLink to="/" class="mt-6 inline-flex items-center gap-2 text-primary hover:underline">
-        <UIcon name="i-heroicons-arrow-left" class="size-4" />
-        <span>Back to Home</span>
-      </NuxtLink>
     </UContainer>
 
     <UContainer v-else class="py-20 text-center">
