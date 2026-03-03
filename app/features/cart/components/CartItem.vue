@@ -1,18 +1,26 @@
 <script setup lang="ts">
-import type { CartItem } from '../types/cart.types';
 import { formatCurrency } from '~/features/shared/utils';
+import type { CartItem } from '../types/cart.types';
 
 interface Props {
   item: CartItem;
 }
 
-defineProps<Props>();
+const props = defineProps<Props>();
 
 const emit = defineEmits<{
   increment: [id: string];
   decrement: [id: string];
   remove: [id: string];
 }>();
+
+function handleDecrement() {
+  if (props.item.quantity <= 1) {
+    emit('remove', props.item.id);
+  } else {
+    emit('decrement', props.item.id);
+  }
+}
 </script>
 
 <template>
@@ -37,7 +45,7 @@ const emit = defineEmits<{
         </h4>
         <button
           type="button"
-          class="shrink-0 cursor-pointer p-0.5 text-gray-400 transition-colors hover:text-red-500"
+          class="shrink-0 cursor-pointer p-0.5 text-gray-500 transition-colors hover:text-red-500"
           aria-label="Remove item"
           @click="emit('remove', item.id)"
         >
@@ -49,9 +57,8 @@ const emit = defineEmits<{
         <div class="flex items-center gap-0.5">
           <button
             type="button"
-            class="flex size-6 cursor-pointer items-center justify-center rounded-full bg-gray-100 text-gray-600 transition-colors hover:bg-gray-200 disabled:opacity-50"
-            :disabled="item.quantity <= 1"
-            @click="emit('decrement', item.id)"
+            class="flex size-6 cursor-pointer items-center justify-center rounded-full bg-gray-100 text-gray-600 transition-colors hover:bg-gray-200"
+            @click="handleDecrement"
           >
             <UIcon name="i-lucide-minus" class="size-3" />
           </button>

@@ -7,6 +7,7 @@ const { isOpen, currentView, closeDrawer, goToCheckout, goToCart } = useCartDraw
 const { items, isEmpty, cartSummary, incrementQuantity, decrementQuantity, removeItem, clearCart } =
   useCart();
 const { createInvoice, isSubmitting, reset: resetCheckout } = useCheckout();
+const toast = useToast();
 
 const cartCurrency = computed(() => 'RWF');
 
@@ -53,7 +54,7 @@ const rules = computed(() => ({
 const v$ = useVuelidate(rules, checkoutForm);
 
 const showClearConfirm = ref(false);
-const orderSuccess = ref(false);
+const showSuccessDialog = ref(false);
 
 function handleClearCart() {
   if (showClearConfirm.value) {
@@ -88,7 +89,6 @@ async function handlePlaceOrder() {
       checkoutForm.value.description
     );
 
-    orderSuccess.value = true;
     clearCart();
     checkoutForm.value = {
       firstName: '',
@@ -99,13 +99,16 @@ async function handlePlaceOrder() {
       description: '',
     };
     v$.value.$reset();
-
-    setTimeout(() => {
-      orderSuccess.value = false;
-      closeDrawer();
-    }, 2000);
-  } catch {
-    // Error is already set in the composable
+    closeDrawer();
+    showSuccessDialog.value = true;
+  } catch (err) {
+    const errorMessage = err instanceof Error ? err.message : 'Failed to place order';
+    toast.add({
+      title: 'Order Failed',
+      description: errorMessage,
+      color: 'error',
+      icon: 'i-lucide-circle-x',
+    });
   }
 }
 
@@ -116,7 +119,6 @@ function handleBack() {
 watch(isOpen, (open) => {
   if (!open) {
     showClearConfirm.value = false;
-    orderSuccess.value = false;
     resetCheckout();
     v$.value.$reset();
     setTimeout(() => {
@@ -124,6 +126,10 @@ watch(isOpen, (open) => {
     }, 300);
   }
 });
+
+function closeSuccessDialog() {
+  showSuccessDialog.value = false;
+}
 </script>
 
 <template>
@@ -377,25 +383,13 @@ watch(isOpen, (open) => {
             </div>
 
             <div class="border-t border-gray-200 px-4 py-4 sm:px-6">
-              <div
-                v-if="orderSuccess"
-                class="mb-3 flex items-center gap-2 rounded-lg bg-green-50 p-3 text-sm text-green-600"
-              >
-                <UIcon name="i-lucide-check-circle" class="size-5" />
-                Order placed successfully!
-              </div>
-
               <button
                 type="submit"
                 class="flex w-full cursor-pointer items-center justify-center gap-2 rounded-full bg-primary px-6 py-3 text-sm font-medium text-white transition-colors hover:bg-primary/90 disabled:cursor-not-allowed disabled:opacity-50"
-                :disabled="isSubmitting || orderSuccess"
+                :disabled="isSubmitting"
                 @click="handlePlaceOrder"
               >
                 <UIcon v-if="isSubmitting" name="i-lucide-loader-2" class="size-4 animate-spin" />
-                <template v-else-if="orderSuccess">
-                  <UIcon name="i-lucide-check" class="size-4" />
-                  Order Placed!
-                </template>
                 <template v-else>
                   <UIcon name="i-lucide-check" class="size-4" />
                   Place Order
@@ -407,4 +401,25 @@ watch(isOpen, (open) => {
       </div>
     </template>
   </USlideover>
+
+  <UModal v-model:open="showSuccessDialog" :ui="{ content: 'sm:max-w-md' }">
+    <template #content>
+      <div class="p-6 text-center">
+        <div class="mx-auto flex size-16 items-center justify-center rounded-full bg-green-100">
+          <UIcon name="i-lucide-check" class="size-8 text-green-600" />
+        </div>
+        <h3 class="mt-4 text-lg font-semibold text-gray-900">Order Placed Successfully</h3>
+        <p class="mt-2 text-sm text-gray-600">
+          Check your email for the invoice and further instructions to complete your order.
+        </p>
+        <button
+          type="button"
+          class="mt-6 w-full cursor-pointer rounded-full bg-primary px-6 py-2.5 text-sm font-medium text-white transition-colors hover:bg-primary/90"
+          @click="closeSuccessDialog"
+        >
+          OK
+        </button>
+      </div>
+    </template>
+  </UModal>
 </template>
