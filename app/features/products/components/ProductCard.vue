@@ -92,11 +92,11 @@ onUnmounted(() => {
         {{ formatPrice(product.price, product.currency) }}
       </p>
 
-      <div class="mt-1.5 flex flex-wrap gap-1.5">
+      <div class="mt-1.5 flex flex-col gap-1.5 sm:flex-row sm:flex-wrap">
         <button
           v-if="showAddToCart"
           type="button"
-          class="inline-flex flex-1 cursor-pointer items-center justify-center gap-1 rounded-full bg-gray-800 px-2.5 py-1.5 text-[10px] font-medium text-white transition-colors duration-200 hover:bg-gray-700 disabled:cursor-not-allowed disabled:opacity-50 sm:flex-none sm:px-3 sm:py-1.5"
+          class="inline-flex w-full cursor-pointer items-center justify-center gap-1 rounded-full bg-gray-800 px-2.5 py-1.5 text-[10px] font-medium text-white transition-colors duration-200 hover:bg-gray-700 disabled:cursor-not-allowed disabled:opacity-50 sm:w-auto sm:px-3 sm:py-1.5"
           :class="{ 'bg-gray-900': isAdded }"
           :disabled="product.is_sold"
           @click.prevent="handleAddToCart(product)"
@@ -108,7 +108,7 @@ onUnmounted(() => {
         <button
           v-if="showScheduleFitting"
           type="button"
-          class="inline-flex flex-1 cursor-pointer items-center justify-center gap-1 rounded-full bg-gray-950 px-2.5 py-1.5 text-[10px] font-medium text-white transition-colors duration-200 hover:bg-gray-800 disabled:cursor-not-allowed disabled:opacity-50 sm:flex-none sm:px-3 sm:py-1.5"
+          class="inline-flex w-full cursor-pointer items-center justify-center gap-1 rounded-full border border-gray-300 bg-white px-2.5 py-1.5 text-[10px] font-medium text-gray-700 transition-colors duration-200 hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-50 sm:w-auto sm:px-3 sm:py-1.5"
           :disabled="product.is_sold"
           @click.prevent="handleScheduleFitting"
         >
