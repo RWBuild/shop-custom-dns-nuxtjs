@@ -36,7 +36,7 @@ function sanitizeServerSide(html: string): string {
 
 
   const disallowedTagPattern = new RegExp(
-    `<(?!\/?(?:${allowedPattern})\\b)[^>]*>`,
+    `<(?!/?(?:${allowedPattern})\\b)[^>]*>`,
     'gi'
   );
   sanitized = sanitized.replace(disallowedTagPattern, '');
@@ -75,6 +75,7 @@ export function useSanitize() {
 
   
     if (import.meta.client && typeof window !== 'undefined') {
+      // eslint-disable-next-line @typescript-eslint/consistent-type-imports
       const DOMPurify = (window as Window & { DOMPurify?: typeof import('dompurify').default })
         .DOMPurify;
       if (DOMPurify) {
