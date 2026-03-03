@@ -51,6 +51,8 @@ function setActiveTab(slug: string, categoryId: number | null, label: string) {
 }
 
 onMounted(() => {
+  emit('tabChange', null);
+
   if (!tabsRef.value) return;
 
   const observer = new IntersectionObserver(
