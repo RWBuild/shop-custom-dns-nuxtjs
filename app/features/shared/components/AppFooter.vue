@@ -6,11 +6,6 @@ const quickLinks = [
   { label: 'About', to: '/about' },
   { label: 'Contact Us', to: '/contact' },
 ];
-
-const information = [
-  { label: 'Privacy Policy', to: '/privacy' },
-  { label: 'Terms & Conditions', to: '/terms' },
-];
 </script>
 
 <template>
@@ -43,13 +38,13 @@ const information = [
               Information
             </h3>
             <ul class="space-y-2 sm:space-y-2.5">
-              <li v-for="link in information" :key="link.to">
-                <NuxtLink
-                  :to="link.to"
+              <li>
+                <a
+                  href="mailto:guhemba@guhemba.rw"
                   class="inline-block py-0.5 text-xs sm:text-sm text-gray-400 hover:text-white transition-colors"
                 >
-                  {{ link.label }}
-                </NuxtLink>
+                  Customer Support
+                </a>
               </li>
             </ul>
           </div>
