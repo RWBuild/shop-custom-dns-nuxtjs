@@ -22,7 +22,7 @@ export function useShopInfo() {
     shopName: computed(() => shopContent.value.shop_info?.name || ''),
     shopSlug: computed(() => shopContent.value.shop_info?.slug || ''),
     shopCategory: computed(() => shopContent.value.shop_info?.category || ''),
-    shopCurrency: computed(() => shopContent.value.shop_info?.currency || 'RWF'),
+    shopCurrency: computed(() => shopContent.value.shop_info?.currency || ''),
     shopSettings: computed(() => shopContent.value.shop_info?.settings || {}),
     isFashionMaker: computed(() => shopContent.value.shop_info?.is_fashion_maker || false),
     images: computed(() => shopContent.value.images || []),
