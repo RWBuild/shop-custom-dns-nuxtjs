@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { useShopInfo } from '#imports';
 import { useVuelidate } from '@vuelidate/core';
 import { email, helpers, required } from '@vuelidate/validators';
 import { formatCurrency } from '~/features/shared/utils';
@@ -10,7 +11,8 @@ const { createInvoice, isSubmitting, reset: resetCheckout } = useCheckout();
 const { trackCheckout } = useAnalytics();
 const toast = useToast();
 
-const cartCurrency = computed(() => 'RWF');
+const { shopCurrency } = useShopInfo();
+
 
 const checkoutForm = ref({
   firstName: '',
@@ -238,7 +240,7 @@ function closeSuccessDialog() {
                   >
                     <span class="font-medium text-gray-900">Total</span>
                     <span class="font-semibold text-gray-900">
-                      {{ formatCurrency(cartSummary.total, cartCurrency) }}
+                      {{ formatCurrency(cartSummary.total, shopCurrency) }}
                     </span>
                   </div>
                 </div>
@@ -385,7 +387,7 @@ function closeSuccessDialog() {
                   <div class="flex items-center justify-between border-t border-gray-200 pt-2">
                     <span class="font-medium text-gray-900">Total</span>
                     <span class="font-semibold text-gray-900">
-                      {{ formatCurrency(cartSummary.total, cartCurrency) }}
+                      {{ formatCurrency(cartSummary.total, shopCurrency) }}
                     </span>
                   </div>
                 </div>
