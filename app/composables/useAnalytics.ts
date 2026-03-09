@@ -30,6 +30,10 @@ function log(params: LogParams) {
   const config = useRuntimeConfig();
   const { shopSlug } = useShopInfo();
 
+  if (import.meta.dev) {
+    console.warn('[Analytics]', params.action, params.tag, params);
+  }
+
   addLog({
     ...params,
     handler_type: 'all',
@@ -77,12 +81,13 @@ export function useAnalytics() {
     });
   }
 
-  function trackSearch(query: string) {
+  function trackSearch(query: string, resultsCount?: number) {
     log({
       tag: query,
       action: ACTION_SEARCH,
       group: GROUP_PRODUCT_SEARCH,
       duplicate_after: 'day',
+      payload: { results_count: resultsCount },
     });
   }
 
