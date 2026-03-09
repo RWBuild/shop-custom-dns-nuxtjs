@@ -67,9 +67,17 @@ export function useProductSearch() {
     }
   }
 
+  const debouncedTrackSearch = debounce((query: string, resultsCount: number) => {
+    if (query.trim().length >= 2) {
+      trackSearch(query.trim(), resultsCount);
+    }
+  }, 1500);
+
   const debouncedSearch = debounce(async (query: string) => {
-    suggestions.value = await searchProducts(query);
+    const results = await searchProducts(query);
+    suggestions.value = results;
     isLoading.value = false;
+    debouncedTrackSearch(query, results.length);
   }, 300);
 
   function handleInput(query: string) {
@@ -107,7 +115,6 @@ export function useProductSearch() {
   async function submitSearch(query?: string) {
     const term = query || searchQuery.value;
     if (!term.trim()) return;
-    trackSearch(term.trim());
     closeSearch();
     await navigateTo(`/?search=${encodeURIComponent(term.trim())}`);
   }
