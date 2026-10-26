@@ -15,10 +15,10 @@
     "typecheck": "nuxi typecheck"
   },
   "dependencies": {
-    "@nuxt/eslint": "^1.15.1",
+    "@nuxt/eslint": "~1.15.1",
     "@nuxt/fonts": "^0.14.0",
     "@nuxt/image": "^2.0.0",
-    "@nuxt/ui": "^4.4.0",
+    "@nuxt/ui": "~4.4.0",
     "@nuxtjs/seo": "^3.4.0",
     "@pinia/nuxt": "^0.11.3",
     "@vuelidate/core": "^2.0.3",
@@ -26,7 +26,7 @@
     "currency.js": "^2.0.4",
     "dompurify": "^3.2.4",
     "libphonenumber-js": "^1.12.38",
-    "nuxt": "^4.3.1",
+    "nuxt": "~4.3.1",
     "photoswipe": "^5.4.4",
     "pinia": "^3.0.4",
     "plyr": "^3.8.4",
