@@ -12,7 +12,7 @@ export interface ScheduleFittingPayload {
 }
 
 export const useProductsStore = defineStore('products', () => {
-  const { shopSlug, guhembaWalletId } = useShopInfo();
+  const { shopSlug } = useShopInfo();
   const { posFetch, shopFetch } = useShopApi();
 
   const products = ref<ProductListItem[]>([]);
@@ -67,7 +67,7 @@ export const useProductsStore = defineStore('products', () => {
       }
 
       const response = await posFetch<ProductsResponse>(
-        '/api/third-party/v1/shops/analytic-hub',
+        '/api/third-party/v2/shops/analytic-hub',
         {
           method: 'POST',
           query: { page },
@@ -89,18 +89,11 @@ export const useProductsStore = defineStore('products', () => {
   }
 
   async function fetchProductBySlug(productSlug: string): Promise<Product | null> {
-    if (!guhembaWalletId.value) {
-      error.value = 'Shop wallet ID is not configured';
-      return null;
-    }
-
     isLoadingProduct.value = true;
     error.value = null;
 
     try {
-      const response = await posFetch<Product>(
-        `/api/third-party/v1/shops/products/${guhembaWalletId.value}/${productSlug}`,
-      );
+      const response = await posFetch<Product>(`/api/third-party/v2/shops/products/${productSlug}`);
 
       currentProduct.value = response;
       return response;

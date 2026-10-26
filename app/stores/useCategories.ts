@@ -27,7 +27,7 @@ export const useCategoriesStore = defineStore('categories', () => {
 
     try {
       const response = await posFetch<CategoriesResponse>(
-        '/api/third-party/v1/shops/analytic-hub',
+        '/api/third-party/v2/shops/analytic-hub',
         {
           method: 'POST',
           query: { page },
