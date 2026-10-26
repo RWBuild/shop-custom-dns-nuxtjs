@@ -67,9 +67,9 @@ export default defineNuxtConfig({
   },
 
   runtimeConfig: {
+    shopSecretKey: process.env.SHOP_SECRET_KEY || '',
     public: {
       shopPublicToken: process.env.SHOP_PUBLIC_TOKEN || '',
-      shopSecretKey: process.env.SHOP_SECRET_KEY || '',
       siteUrl: process.env.NUXT_PUBLIC_SITE_URL || 'https://example.com',
       shopBaseUrl: process.env.GUHEMBA_SHOP_BASE_URL || 'https://shops.guhemba.rw',
       posBaseUrl: process.env.POS_BASE_URL || 'https://pos.guhemba.rw',

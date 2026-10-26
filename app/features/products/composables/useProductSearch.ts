@@ -47,7 +47,7 @@ export function useProductSearch() {
 
     try {
       const response = await posFetch<{ data: ProductListItem[] }>(
-        '/api/third-party/v1/shops/analytic-hub',
+        '/api/third-party/v2/shops/analytic-hub',
         {
           method: 'POST',
           body: {
