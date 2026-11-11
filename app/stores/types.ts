@@ -70,6 +70,7 @@ export interface ProductListItem {
   image: string;
   is_sold: boolean;
   product_type_id?: number;
+  created_at?: string;
 }
 
 export type ProductsResponse = PaginatedResponse<ProductListItem>;

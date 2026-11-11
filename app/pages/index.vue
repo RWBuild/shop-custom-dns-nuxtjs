@@ -64,8 +64,8 @@ function handleAddToCart(product: ProductType) {
 // Infinite scroll with IntersectionObserver
 const loadMoreTrigger = ref<HTMLElement | null>(null);
 
-onMounted(() => {
-  if (!loadMoreTrigger.value) return;
+watch(loadMoreTrigger, (element, _previousElement, onCleanup) => {
+  if (!element || !import.meta.client) return;
 
   const observer = new IntersectionObserver(
     async (entries) => {
@@ -74,15 +74,12 @@ onMounted(() => {
         await productsStore.loadMore();
       }
     },
-    { rootMargin: '100px' },
+    { rootMargin: '300px 0px' },
   );
 
-  watch(loadMoreTrigger, (el) => {
-    if (el) observer.observe(el);
-  }, { immediate: true });
-
-  onUnmounted(() => observer.disconnect());
-});
+  observer.observe(element);
+  onCleanup(() => observer.disconnect());
+}, { flush: 'post' });
 </script>
 
 <template>
@@ -119,6 +116,14 @@ onMounted(() => {
           name="i-lucide-loader-2"
           class="size-6 animate-spin text-primary"
         />
+        <button
+          v-else
+          type="button"
+          class="cursor-pointer text-xs font-medium text-primary hover:underline"
+          @click="productsStore.loadMore()"
+        >
+          Load more products
+        </button>
       </div>
 
       <!-- Error state -->

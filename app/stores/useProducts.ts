@@ -32,6 +32,20 @@ export const useProductsStore = defineStore('products', () => {
   const lastPage = computed(() => meta.value?.last_page || 1);
   const hasMorePages = computed(() => currentPage.value < lastPage.value);
 
+  function sortNewestFirst(items: ProductListItem[]): ProductListItem[] {
+    const hasCompleteCreationDates = items.every(
+      (item) => item.created_at && Number.isFinite(Date.parse(item.created_at)),
+    );
+
+    return [...items].sort((a, b) => {
+      if (hasCompleteCreationDates) {
+        return Date.parse(b.created_at ?? '') - Date.parse(a.created_at ?? '');
+      }
+
+      return b.id - a.id;
+    });
+  }
+
   function buildSearchValue(): Record<string, unknown> | undefined {
     const searchValue: Record<string, unknown> = {};
 
@@ -76,9 +90,9 @@ export const useProductsStore = defineStore('products', () => {
       );
 
       if (append && page > 1) {
-        products.value = [...products.value, ...response.data];
+        products.value = sortNewestFirst([...products.value, ...response.data]);
       } else {
-        products.value = response.data;
+        products.value = sortNewestFirst(response.data);
       }
       meta.value = response.meta;
     } catch (err) {
