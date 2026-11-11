@@ -36,6 +36,7 @@ export interface ProductListItem {
   is_sold: boolean;
   purchase_option?: string | null;
   product_type_id?: number;
+  created_at?: string;
 }
 
 export interface ProductFilters {
