@@ -60,6 +60,14 @@ export const useProductsStore = defineStore('products', () => {
     return Object.keys(searchValue).length > 0 ? searchValue : undefined;
   }
 
+  function requestProductsPage(page: number, body: Record<string, unknown>) {
+    return posFetch<ProductsResponse>('/api/third-party/v2/shops/analytic-hub', {
+      method: 'POST',
+      query: { page },
+      body,
+    });
+  }
+
   async function fetchProducts(page = 1, append = false): Promise<void> {
     if (!shopSlug.value) {
       error.value = 'Shop slug is not configured';
@@ -80,17 +88,21 @@ export const useProductsStore = defineStore('products', () => {
         body.search_value = searchValue;
       }
 
-      const response = await posFetch<ProductsResponse>(
-        '/api/third-party/v2/shops/analytic-hub',
-        {
-          method: 'POST',
-          query: { page },
-          body,
-        },
-      );
+      if (!append && page === 1) {
+        const [firstPage, secondPage] = await Promise.all([
+          requestProductsPage(1, body),
+          requestProductsPage(2, body),
+        ]);
+
+        products.value = sortNewestFirst([...firstPage.data, ...secondPage.data]);
+        meta.value = secondPage.data.length > 0 ? secondPage.meta : firstPage.meta;
+        return;
+      }
+
+      const response = await requestProductsPage(page, body);
 
       if (append && page > 1) {
-        products.value = sortNewestFirst([...products.value, ...response.data]);
+        products.value = [...products.value, ...sortNewestFirst(response.data)];
       } else {
         products.value = sortNewestFirst(response.data);
       }

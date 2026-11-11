@@ -18,8 +18,8 @@ const { trackPageView, trackAddToCart } = useAnalytics();
 const productsStore = useProductsStore();
 const categoriesStore = useCategoriesStore();
 
-const hasFetched = ref(false);
-const isInitialLoading = computed(() => !hasFetched.value || categoriesStore.isLoading);
+const hasFetchedProducts = ref(false);
+const isInitialLoading = computed(() => !hasFetchedProducts.value);
 const isFilteringProducts = ref(false);
 
 // Transform categories for tabs
@@ -34,18 +34,25 @@ const categoryTabs = computed(() => {
 const products = computed(() => productsStore.products);
 
 async function handleTabChange(categoryId: number | null) {
+  if (productsStore.selectedCategoryId === categoryId) return;
+
   isFilteringProducts.value = true;
-  await productsStore.filterByCategory(categoryId);
-  isFilteringProducts.value = false;
+  try {
+    await productsStore.filterByCategory(categoryId);
+  } finally {
+    isFilteringProducts.value = false;
+  }
 }
 
 onMounted(async () => {
   trackPageView('Landing page');
-  await Promise.all([
-    categoriesStore.fetchCategories(),
-    productsStore.fetchProducts(),
-  ]);
-  hasFetched.value = true;
+  void categoriesStore.fetchCategories();
+
+  try {
+    await productsStore.fetchProducts();
+  } finally {
+    hasFetchedProducts.value = true;
+  }
 });
 
 function handleAddToCart(product: ProductType) {
